@@ -27,5 +27,5 @@ order: 4
 
 ## Contact
 
-- 📧 Email: [iloveit8110@megazone.com](mailto:iloveit8110@megazone.com)
+- 📧 Email: [iloveit8110@naver.com](mailto:iloveit8110@naver.com)
 - 🐙 GitHub: [i-am-U-hyUn](https://github.com/i-am-U-hyUn)
