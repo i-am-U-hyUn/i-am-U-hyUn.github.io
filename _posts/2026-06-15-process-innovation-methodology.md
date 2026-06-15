@@ -1,6 +1,6 @@
 ---
 title: "프로세스 혁신 방법론 (Process Innovation)"
-date: 2026-06-15 20:00:00 +0900
+date: 2026-06-15 00:00:00 +0900
 categories: [공부, 경영컨설팅]
 tags: [PI, 프로세스혁신, 6시그마, BPR, ERP, SIPOC, FP모델, 경영혁신]
 toc: true

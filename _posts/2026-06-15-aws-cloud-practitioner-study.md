@@ -1,6 +1,6 @@
 ---
 title: "AWS Cloud Practitioner (CLF-C02) 핵심 정리"
-date: 2026-06-15 21:00:00 +0900
+date: 2026-06-15 00:01:00 +0900
 categories: [자격증, AWS]
 tags: [AWS, Cloud, CLF-C02, 자격증, 클라우드, IAM, EC2, S3]
 toc: true
