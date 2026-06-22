@@ -1,6 +1,6 @@
 ---
 title: "AWS Summit New York 2026 주요 발표 총정리"
-date: 2026-06-22 19:00:00 +0900
+date: 2026-06-22 09:00:00 +0900
 categories: [공부, 클라우드]
 tags: [AWS, AWSsummit, Bedrock, AI에이전트, AgentCore, Kiro, EC2, S3, 클라우드]
 toc: true
