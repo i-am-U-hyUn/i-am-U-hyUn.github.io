@@ -1,12 +1,12 @@
 ---
-title: "Essential CS Knowledge for Interviews: Core Network, Infra, Cloud & Linux Comparisons"
+title: "Undergraduate CS Concepts Every Engineer Should Know"
 date: 2026-07-01 09:00:00 +0900
-categories: [Study, Network]
-tags: [Networking, Infrastructure, Cloud, AWS, Linux, TCP, UDP, LoadBalancer, SecurityGroup, NACL, Interview]
+categories: [Study, CS]
+tags: [Networking, Infrastructure, Cloud, AWS, Linux, OS, ComputerArchitecture, SystemsProgramming, TCP, UDP, Process, Thread, Memory]
 toc: true
 ---
 
-As a CS graduate and engineer, you should be able to answer **"what's the difference between the two?"** cleanly whenever it comes up in an interview or on the job. Here's a rundown of the core network / infra / cloud / Linux comparisons that come up again and again — not just the definitions, but where each concept applies, how it's controlled, and whether it tracks state.
+As an engineer, you should be able to answer **"what's the difference between the two?"** cleanly — this is a running collection of undergraduate-level CS concepts that come up again and again. It starts with networking, infra, cloud, and Linux, and now extends into operating systems, computer architecture, and systems programming — covering not just the definitions, but where each concept applies, how it's controlled, and whether it tracks state. New topics get added here as they come up.
 
 ---
 
@@ -111,4 +111,113 @@ The most important technical distinction is whether the mechanism "remembers" st
 
 ---
 
-These comparisons are the kind of knowledge that gives you a logical basis for **"why choose this technology"** when designing systems or troubleshooting as a CS engineer. Deeper mechanics — like the TCP handshake sequence or the Linux inode structure — are worth a dedicated follow-up post.
+## 7. [OS] Process vs Thread
+
+The most fundamental concept in how an operating system divides and isolates units of execution.
+
+| Aspect | Process | Thread |
+| --- | --- | --- |
+| **Memory space** | **Independent** — separate Code, Data, Heap, and Stack | Code/Data/Heap are **shared**; only the Stack is per-thread |
+| **Creation/switch cost** | Heavy (expensive context switching) | Light (cheap context switching) |
+| **Communication** | Requires IPC (pipes, sockets, shared memory, etc.) | Communicates simply via shared globals/memory |
+| **Failure blast radius** | One process crashing doesn't affect others | One thread's error can crash the entire process |
+| **Typical example** | Each browser tab as an isolated process | The UI-rendering/networking threads inside a tab |
+
+---
+
+## 8. [OS] Mutex vs Semaphore
+
+Both are synchronization primitives, but the distinction is **an ownership-based lock vs. a counter-based signal**.
+
+| Aspect | Mutex | Semaphore |
+| --- | --- | --- |
+| **Purpose** | Mutual exclusion — only one thread accesses at a time | Controls resource count — allows up to N concurrent accesses |
+| **Ownership** | Only the thread that acquired the lock can release it | No ownership — any thread can signal it |
+| **Value range** | Binary (0 or 1) | Counting (0 to N) |
+| **Typical use** | Protecting a critical section | Managing a limited resource pool, e.g., a connection pool |
+
+---
+
+## 9. [OS] Paging vs Segmentation
+
+Both are virtual memory management techniques, but the key question is **fixed-size blocks vs. variable-size, logically meaningful blocks**.
+
+| Aspect | Paging | Segmentation |
+| --- | --- | --- |
+| **Unit of division** | Fixed-size pages | Variable-size segments (logical units: code, data, stack, etc.) |
+| **External fragmentation** | None | Can occur |
+| **Internal fragmentation** | Can occur (wasted space in the last page) | Rare |
+| **Address translation** | Page table (page number + offset) | Segment table (segment number + offset) |
+| **Visibility to programmer** | Transparent — the OS handles it invisibly | Reflects the program's actual logical structure |
+
+---
+
+## 10. [Computer Architecture] CISC vs RISC
+
+Two competing philosophies for designing a CPU's instruction set (ISA): **fewer, complex instructions vs. more, simple ones executed fast**.
+
+| Aspect | CISC (Complex Instruction Set Computer) | RISC (Reduced Instruction Set Computer) |
+| --- | --- | --- |
+| **Instruction characteristics** | Many, complex instructions (one instruction does several things) | Few, simple instructions (goal: one instruction per clock cycle) |
+| **Instruction length** | Variable | Fixed |
+| **Where complexity lives** | Hardware (microcode) absorbs the complexity | The compiler takes on more of the optimization burden |
+| **Typical example** | x86 (Intel, AMD) | ARM, RISC-V |
+| **Power efficiency** | Relatively lower | Relatively higher — favored in mobile/low-power devices |
+
+---
+
+## 11. [Computer Architecture] Big-Endian vs Little-Endian
+
+The difference in **byte order** when storing multi-byte data in memory.
+
+| Aspect | Big-Endian | Little-Endian |
+| --- | --- | --- |
+| **Storage order** | Most significant byte (MSB) stored at the lowest address | Least significant byte (LSB) stored at the lowest address |
+| **Human readability** | Intuitive — matches the order humans write numbers | Not intuitive |
+| **Typical use** | Network protocols (network byte order) | x86/x64 CPUs, ARM (default) |
+| **Example (0x12345678)** | `12 34 56 78` | `78 56 34 12` |
+
+---
+
+## 12. [Systems Programming] Stack vs Heap
+
+The two memory regions used during program execution, differing in **who decides allocation/deallocation, and when**.
+
+| Aspect | Stack | Heap |
+| --- | --- | --- |
+| **Allocation/deallocation** | Determined at compile time; auto-freed when a function returns | Managed at runtime by the developer (malloc/free) or a GC |
+| **Speed** | Very fast — just moving a pointer | Relatively slow — the allocator has to search for free space |
+| **Size** | Limited (stack overflow if exceeded) | Relatively large (bounded by system memory) |
+| **Data structure** | LIFO (local variables, call frames) | No inherent order — accessed via pointers |
+| **Typical failure** | Stack overflow (e.g., excessive recursion) | Memory leaks, use-after-free |
+
+---
+
+## 13. [Systems Programming] Static Linking vs Dynamic Linking
+
+The difference is **when the library code gets bundled into the compiled program**.
+
+| Aspect | Static Linking | Dynamic Linking |
+| --- | --- | --- |
+| **When linking happens** | Compile time — library code is embedded in the executable | Runtime — a `.so`/`.dll` is loaded when the program runs |
+| **Executable size** | Larger (includes the library) | Smaller (library lives in a separate file) |
+| **Runtime speed** | Faster (no loading overhead) | Relatively slower (the dynamic loader gets involved) |
+| **Memory efficiency** | Each process loads its own copy of the library | Multiple processes share one copy of the library (saves memory) |
+| **Deployment/updates** | Requires a recompile when the library changes | Swapping the library file alone is enough, e.g. for a security patch |
+
+---
+
+## 14. [Systems Programming] Blocking I/O vs Non-blocking I/O
+
+The difference is **whether the calling thread waits for the I/O operation to finish**. (Note: this is a different axis from sync vs. async.)
+
+| Aspect | Blocking I/O | Non-blocking I/O |
+| --- | --- | --- |
+| **Calling thread state** | Blocked/waiting until the I/O completes | Returns immediately; the thread can keep doing other work |
+| **Resource efficiency** | A waiting thread can't do anything else (wasted resource) | A single thread can handle many I/O operations concurrently |
+| **Implementation complexity** | Simple — sequential code flow | More complex — needs an event loop, callbacks, or polling |
+| **Typical example** | Traditional `read()`/`write()` system calls | `epoll`/`select`, Node.js's event loop, `io_uring` |
+
+---
+
+These comparisons are the kind of knowledge that gives you a logical basis for **"why choose this technology"** when designing systems or troubleshooting as a CS engineer. More undergraduate CS concepts will keep getting added to this post over time.
