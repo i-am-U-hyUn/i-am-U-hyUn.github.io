@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PI 포털 데모 (가상 데이터)</title>
+<style>
+  :root {
+    --ink: #111827;
+    --ink-2: #374151;
+    --muted: #9ca3af;
+    --line: #e5e7eb;
+    --surface: #f9fafb;
+    --accent: #111111;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+  }
+  .notice {
+    background: #fffbeb;
+    border-bottom: 1px solid #fde68a;
+    color: #92400e;
+    font-size: 12px;
+    padding: 6px 16px;
+    text-align: center;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  header .title { font-size: 15px; font-weight: 700; }
+  header .subtitle { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  nav {
+    display: flex;
+    gap: 24px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  nav button {
+    appearance: none;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 10px 2px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    cursor: pointer;
+  }
+  nav button.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 700; }
+  main { padding: 18px 20px 28px; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  /* ── Kanban ── */
+  .kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .kanban-col { background: var(--surface); border-radius: 10px; padding: 10px; }
+  .kanban-col h3 { font-size: 12.5px; margin: 2px 4px 10px; color: var(--ink-2); display: flex; align-items: center; justify-content: space-between; }
+  .kanban-col h3 .count { color: var(--muted); font-weight: 500; }
+  .card {
+    background: #ffffff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px; margin-bottom: 8px; font-size: 12px;
+  }
+  .card .no { color: var(--muted); font-size: 10.5px; }
+  .card .req { font-weight: 600; margin: 3px 0 6px; line-height: 1.4; }
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 999px;
+    background: #eef2ff; color: #4338ca; margin-right: 4px;
+  }
+  .badge.owner { background: #f0fdf4; color: #15803d; }
+
+  /* ── Form ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 640px; }
+  .field { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-weight: 600; color: var(--ink-2); }
+  .field input, .field select, .field textarea {
+    border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font-size: 12.5px;
+    background: var(--surface); font-family: inherit;
+  }
+  .field textarea { resize: vertical; min-height: 64px; }
+  .submit-btn {
+    grid-column: 1 / -1; justify-self: start; margin-top: 4px;
+    background: var(--ink); color: #fff; border: none; border-radius: 7px;
+    padding: 9px 18px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(12px);
+    background: var(--ink); color: #fff; font-size: 12.5px; padding: 10px 16px;
+    border-radius: 8px; opacity: 0; transition: all 0.25s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Summary ── */
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+  .stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; text-align: center; }
+  .stat-tile .label { font-size: 11.5px; color: var(--muted); }
+  .stat-tile .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+  .stat-tile .value small { font-size: 12px; font-weight: 500; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .chart-card { border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .chart-card h4 { font-size: 12.5px; margin: 0 0 2px; }
+  .chart-card .sub { font-size: 10.5px; color: var(--muted); margin-bottom: 10px; }
+  .bars { display: flex; align-items: flex-end; gap: 14px; height: 140px; border-bottom: 1px solid #d1d5db; }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; height: 100%; justify-content: flex-end; }
+  .bar { width: 28px; border-radius: 4px 4px 0 0; }
+  .bar-val { font-size: 10.5px; color: var(--ink-2); }
+  .bar-label { font-size: 10.5px; color: var(--muted); margin-top: 6px; }
+
+  footer { padding: 10px 20px; border-top: 1px solid var(--line); font-size: 10.5px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="notice">이 페이지는 포트폴리오 소개용 데모입니다. 모든 안건·부서·수치는 가상의 예시 데이터이며 실제 서비스와 무관합니다.</div>
+
+<header>
+  <div>
+    <div class="title">2026 Process Innovation Portal</div>
+    <div class="subtitle">DEMO · 가상 데이터로 재구성한 UI 목업</div>
+  </div>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="kanban">과제 현황판</button>
+  <button class="tab-btn" data-tab="form">신규 안건 접수</button>
+  <button class="tab-btn" data-tab="summary">현황 요약</button>
+</nav>
+
+<main>
+
+  <!-- ── Kanban tab ── -->
+  <section id="tab-kanban" class="tab active">
+    <div class="kanban" id="kanban-board"></div>
+  </section>
+
+  <!-- ── Form tab ── -->
+  <section id="tab-form" class="tab">
+    <form class="form-grid" id="demo-form">
+      <div class="field">
+        <label>요청부서</label>
+        <select>
+          <option>A팀</option><option>B팀</option><option>C팀</option><option>D팀</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>대상부서</label>
+        <select>
+          <option>A팀</option><option>B팀</option><option>C팀</option><option>D팀</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>요청자 성함</label>
+        <input type="text" placeholder="예: 홍길동">
+      </div>
+      <div class="field">
+        <label>Owner</label>
+        <input type="text" placeholder="예: 김담당">
+      </div>
+      <div class="field full">
+        <label>Request</label>
+        <input type="text" placeholder="예: 예시 프로세스 개선 요청입니다">
+      </div>
+      <div class="field full">
+        <label>Context</label>
+        <textarea placeholder="배경 설명을 입력하세요 (예시)"></textarea>
+      </div>
+      <button type="submit" class="submit-btn">접수하기</button>
+    </form>
+  </section>
+
+  <!-- ── Summary tab ── -->
+  <section id="tab-summary" class="tab">
+    <div class="stat-row">
+      <div class="stat-tile"><div class="label">평균 만족도</div><div class="value">4.3<small>점</small></div></div>
+      <div class="stat-tile"><div class="label">응답 완료 안건</div><div class="value">58<small>건</small></div></div>
+      <div class="stat-tile"><div class="label">최고 만족 (5점)</div><div class="value">22<small>건</small></div></div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h4>설문 점수 분포 (예시)</h4>
+        <div class="sub">1~5점 · 응답 건수</div>
+        <div class="bars" id="bars-score"></div>
+      </div>
+      <div class="chart-card">
+        <h4>팀별 평균 만족도 (예시)</h4>
+        <div class="sub">5점 만점 · A~D는 가상의 팀</div>
+        <div class="bars" id="bars-team"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>PI 포털 UI 데모 · 실제 서비스와 데이터는 무관합니다</footer>
+<div class="toast" id="toast">접수되었습니다! (데모이므로 실제 저장되지 않습니다)</div>
+
+<script>
+  // ── Tab switching ──
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── Kanban mock data ──
+  var COLUMNS = [
+    { key: 'review',   title: '검토중',  cards: [
+      { no: 101, tier: 'Cross-Team', req: '예시 안건 #1 — 반복 승인 절차 간소화', owner: 'Owner A' },
+      { no: 102, tier: 'Local',      req: '예시 안건 #2 — 사내 양식 표준화', owner: 'Owner B' }
+    ]},
+    { key: 'progress', title: '진행중',  cards: [
+      { no: 87,  tier: 'Cross-Team', req: '예시 안건 #3 — 보고 체계 자동화', owner: 'Owner C' },
+      { no: 90,  tier: 'Cross-Company', req: '예시 안건 #4 — 협업 도구 통합', owner: 'Owner A' },
+      { no: 95,  tier: 'Local',      req: '예시 안건 #5 — 데이터 입력 이중화 제거', owner: 'Owner D' }
+    ]},
+    { key: 'done',     title: '완료',    cards: [
+      { no: 61,  tier: 'Local',      req: '예시 안건 #6 — 정기 보고서 자동 발송', owner: 'Owner B' },
+      { no: 70,  tier: 'Cross-Team', req: '예시 안건 #7 — 승인 권한 위임', owner: 'Owner C' }
+    ]}
+  ];
+
+  var board = document.getElementById('kanban-board');
+  COLUMNS.forEach(function (col) {
+    var colEl = document.createElement('div');
+    colEl.className = 'kanban-col';
+    colEl.innerHTML = '<h3>' + col.title + ' <span class="count">' + col.cards.length + '</span></h3>';
+    col.cards.forEach(function (c) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML =
+        '<div class="no">No.' + c.no + '</div>' +
+        '<div class="req">' + c.req + '</div>' +
+        '<span class="badge">' + c.tier + '</span>' +
+        '<span class="badge owner">' + c.owner + '</span>';
+      colEl.appendChild(card);
+    });
+    board.appendChild(colEl);
+  });
+
+  // ── Form submit (demo only, no network call) ──
+  document.getElementById('demo-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(function () { toast.classList.remove('show'); }, 2400);
+    e.target.reset();
+  });
+
+  // ── Summary bars ──
+  function renderBars(containerId, items, maxDomain) {
+    var el = document.getElementById(containerId);
+    var maxVal = maxDomain || Math.max.apply(null, items.map(function (i) { return i.value; }));
+    items.forEach(function (item) {
+      var wrap = document.createElement('div');
+      wrap.className = 'bar-wrap';
+      var h = Math.round((item.value / maxVal) * 100);
+      wrap.innerHTML =
+        '<div class="bar-val">' + item.value + '</div>' +
+        '<div class="bar" style="height:' + h + '%; background:' + item.color + '"></div>' +
+        '<div class="bar-label">' + item.label + '</div>';
+      el.appendChild(wrap);
+    });
+  }
+
+  renderBars('bars-score', [
+    { label: '1점', value: 4,  color: '#b13a3a' },
+    { label: '2점', value: 6,  color: '#d97b78' },
+    { label: '3점', value: 10, color: '#9c9a92' },
+    { label: '4점', value: 16, color: '#5598e7' },
+    { label: '5점', value: 22, color: '#184f95' }
+  ], 22);
+
+  renderBars('bars-team', [
+    { label: 'A팀', value: 4.5, color: '#2a78d6' },
+    { label: 'B팀', value: 3.8, color: '#2a78d6' },
+    { label: 'C팀', value: 4.6, color: '#2a78d6' },
+    { label: 'D팀', value: 4.1, color: '#2a78d6' }
+  ], 5);
+</script>
+
+</body>
+</html>

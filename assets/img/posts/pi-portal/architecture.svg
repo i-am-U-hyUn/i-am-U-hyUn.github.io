@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 620" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5eead4"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="920" height="620" fill="#ffffff"/>
+
+  <text x="460" y="38" text-anchor="middle" font-size="18" font-weight="700" fill="#111827">PI 웹 포털 — 아키텍처 개요</text>
+  <text x="460" y="60" text-anchor="middle" font-size="12.5" fill="#6b7280">Google Workspace 위에서 서버 없이 돌아가는 사내 프로세스 포털</text>
+
+  <!-- Browser box -->
+  <rect x="330" y="90" width="260" height="64" rx="10" fill="#ffffff" stroke="#111827" stroke-width="1.6"/>
+  <text x="460" y="115" text-anchor="middle" font-size="13.5" font-weight="700" fill="#111827">사용자 브라우저</text>
+  <text x="460" y="134" text-anchor="middle" font-size="11.5" fill="#6b7280">Index.html · 과제 현황판 / 접수 / 요약</text>
+
+  <!-- Arrow down -->
+  <line x1="460" y1="154" x2="460" y2="196" stroke="#9ca3af" stroke-width="1.6"/>
+  <polygon points="460,204 454,192 466,192" fill="#9ca3af"/>
+
+  <!-- Apps Script hub -->
+  <rect x="300" y="206" width="320" height="72" rx="10" fill="#ffffff" stroke="url(#accent)" stroke-width="2.4"/>
+  <text x="460" y="234" text-anchor="middle" font-size="14" font-weight="700" fill="#111827">Google Apps Script</text>
+  <text x="460" y="253" text-anchor="middle" font-size="11.5" fill="#6b7280">Code.gs · GeminiClassifier.gs · 웹앱(doGet)</text>
+  <text x="460" y="269" text-anchor="middle" font-size="11" fill="#9ca3af">서버/DB 없이 백엔드 로직 + 데이터 계층 겸용</text>
+
+  <!-- Branch lines from hub to 4 boxes -->
+  <line x1="460" y1="278" x2="460" y2="308" stroke="#9ca3af" stroke-width="1.6"/>
+  <line x1="140" y1="308" x2="780" y2="308" stroke="#9ca3af" stroke-width="1.6"/>
+  <line x1="140" y1="308" x2="140" y2="330" stroke="#9ca3af" stroke-width="1.6"/>
+  <line x1="380" y1="308" x2="380" y2="330" stroke="#9ca3af" stroke-width="1.6"/>
+  <line x1="540" y1="308" x2="540" y2="330" stroke="#9ca3af" stroke-width="1.6"/>
+  <line x1="780" y1="308" x2="780" y2="330" stroke="#9ca3af" stroke-width="1.6"/>
+
+  <!-- 4 downstream boxes -->
+  <g>
+    <rect x="40" y="330" width="200" height="92" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.4"/>
+    <text x="140" y="358" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Google Sheets</text>
+    <text x="140" y="377" text-anchor="middle" font-size="11" fill="#6b7280">과제 목록 · 권한 시트 ·</text>
+    <text x="140" y="392" text-anchor="middle" font-size="11" fill="#6b7280">설문/제출 로그 (DB 역할)</text>
+  </g>
+
+  <g>
+    <rect x="280" y="330" width="200" height="92" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.4"/>
+    <text x="380" y="358" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Gmail</text>
+    <text x="380" y="377" text-anchor="middle" font-size="11" fill="#6b7280">이메일 OTP 인증 ·</text>
+    <text x="380" y="392" text-anchor="middle" font-size="11" fill="#6b7280">미제출 안건 자동 알림</text>
+  </g>
+
+  <g>
+    <rect x="440" y="330" width="200" height="92" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.4"/>
+    <text x="540" y="358" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Directory API</text>
+    <text x="540" y="377" text-anchor="middle" font-size="11" fill="#6b7280">People API → AdminDirectory</text>
+    <text x="540" y="392" text-anchor="middle" font-size="11" fill="#6b7280">로그인 계정 ↔ 표시 이름 매핑</text>
+  </g>
+
+  <g>
+    <rect x="680" y="330" width="200" height="92" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.4"/>
+    <text x="780" y="358" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Vertex AI Gemini</text>
+    <text x="780" y="377" text-anchor="middle" font-size="11" fill="#6b7280">서비스 계정 인증 ·</text>
+    <text x="780" y="392" text-anchor="middle" font-size="11" fill="#6b7280">안건 카테고리 자동 분류</text>
+  </g>
+
+  <!-- Access control note -->
+  <rect x="180" y="452" width="560" height="108" rx="10" fill="#faf5ff" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="460" y="478" text-anchor="middle" font-size="13" font-weight="700" fill="#4c1d95">열람 권한 분리 (Row-level Access)</text>
+  <text x="460" y="500" text-anchor="middle" font-size="11.5" fill="#6b21a8">STEP 1 — 관리자 목록에 등록된 계정: 전체 안건 조회 가능</text>
+  <text x="460" y="518" text-anchor="middle" font-size="11.5" fill="#6b21a8">STEP 2 — 그 외 로그인 사용자: 본인이 요청자·Owner·이해관계자로</text>
+  <text x="460" y="534" text-anchor="middle" font-size="11.5" fill="#6b21a8">등록된 안건만 필터링해서 노출</text>
+
+  <text x="460" y="596" text-anchor="middle" font-size="11" fill="#9ca3af">※ 실제 서비스 URL·프로젝트 식별자·안건 데이터는 보안상 표기하지 않았습니다.</text>
+</svg>
