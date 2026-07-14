@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <rect x="0" y="0" width="920" height="520" fill="#ffffff"/>
+
+  <text x="30" y="34" font-size="12" font-weight="700" fill="#9ca3af" letter-spacing="0.04em">MOCKUP · 가상 데이터</text>
+
+  <!-- Stat tiles -->
+  <g>
+    <rect x="30" y="50" width="270" height="92" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.2"/>
+    <text x="165" y="80" text-anchor="middle" font-size="12" fill="#6b7280">평균 만족도</text>
+    <text x="165" y="114" text-anchor="middle" font-size="30" font-weight="700" fill="#111827">4.3<tspan font-size="14" font-weight="500">점</tspan></text>
+    <text x="165" y="132" text-anchor="middle" font-size="10.5" fill="#9ca3af">5점 만점 · 예시</text>
+  </g>
+
+  <g>
+    <rect x="325" y="50" width="270" height="92" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.2"/>
+    <text x="460" y="80" text-anchor="middle" font-size="12" fill="#6b7280">응답 완료 안건</text>
+    <text x="460" y="114" text-anchor="middle" font-size="30" font-weight="700" fill="#111827">58<tspan font-size="14" font-weight="500">건</tspan></text>
+    <text x="460" y="132" text-anchor="middle" font-size="10.5" fill="#9ca3af">예시 데이터</text>
+  </g>
+
+  <g>
+    <rect x="620" y="50" width="270" height="92" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.2"/>
+    <text x="755" y="80" text-anchor="middle" font-size="12" fill="#6b7280">최고 만족 (5점)</text>
+    <text x="755" y="114" text-anchor="middle" font-size="30" font-weight="700" fill="#111827">22<tspan font-size="14" font-weight="500">건</tspan></text>
+    <text x="755" y="132" text-anchor="middle" font-size="10.5" fill="#9ca3af">예시 데이터</text>
+  </g>
+
+  <!-- Chart A: score distribution (diverging: red=낮은 점수 ↔ blue=높은 점수) -->
+  <text x="30" y="182" font-size="13.5" font-weight="700" fill="#111827">설문 점수 분포 (예시)</text>
+  <text x="30" y="199" font-size="11" fill="#9ca3af">1~5점 · 응답 건수</text>
+
+  <line x1="30" y1="430" x2="430" y2="430" stroke="#c3c2b7" stroke-width="1.4"/>
+
+  <!-- score 1 -->
+  <rect x="70" y="403" width="40" height="27" rx="4" fill="#b13a3a"/>
+  <text x="90" y="397" text-anchor="middle" font-size="11" fill="#52514e">4</text>
+  <text x="90" y="448" text-anchor="middle" font-size="11" fill="#6b7280">1점</text>
+
+  <!-- score 2 -->
+  <rect x="150" y="389" width="40" height="41" rx="4" fill="#d97b78"/>
+  <text x="170" y="383" text-anchor="middle" font-size="11" fill="#52514e">6</text>
+  <text x="170" y="448" text-anchor="middle" font-size="11" fill="#6b7280">2점</text>
+
+  <!-- score 3 -->
+  <rect x="230" y="362" width="40" height="68" rx="4" fill="#9c9a92"/>
+  <text x="250" y="356" text-anchor="middle" font-size="11" fill="#52514e">10</text>
+  <text x="250" y="448" text-anchor="middle" font-size="11" fill="#6b7280">3점</text>
+
+  <!-- score 4 -->
+  <rect x="310" y="321" width="40" height="109" rx="4" fill="#5598e7"/>
+  <text x="330" y="315" text-anchor="middle" font-size="11" fill="#52514e">16</text>
+  <text x="330" y="448" text-anchor="middle" font-size="11" fill="#6b7280">4점</text>
+
+  <!-- score 5 -->
+  <rect x="390" y="280" width="40" height="150" rx="4" fill="#184f95"/>
+  <text x="410" y="274" text-anchor="middle" font-size="11" fill="#52514e">22</text>
+  <text x="410" y="448" text-anchor="middle" font-size="11" fill="#6b7280">5점</text>
+
+  <!-- Chart B: team averages (single hue, one metric across generic teams) -->
+  <text x="490" y="182" font-size="13.5" font-weight="700" fill="#111827">팀별 평균 만족도 (예시)</text>
+  <text x="490" y="199" font-size="11" fill="#9ca3af">5점 만점 · A~D는 가상의 팀입니다</text>
+
+  <!-- gridlines 0..5 -->
+  <g stroke="#e1e0d9" stroke-width="1">
+    <line x1="490" y1="430" x2="890" y2="430"/>
+    <line x1="490" y1="400" x2="890" y2="400"/>
+    <line x1="490" y1="370" x2="890" y2="370"/>
+    <line x1="490" y1="340" x2="890" y2="340"/>
+    <line x1="490" y1="310" x2="890" y2="310"/>
+    <line x1="490" y1="280" x2="890" y2="280"/>
+  </g>
+  <g font-size="10" fill="#9ca3af">
+    <text x="482" y="433" text-anchor="end">0</text>
+    <text x="482" y="403" text-anchor="end">1</text>
+    <text x="482" y="373" text-anchor="end">2</text>
+    <text x="482" y="343" text-anchor="end">3</text>
+    <text x="482" y="313" text-anchor="end">4</text>
+    <text x="482" y="283" text-anchor="end">5</text>
+  </g>
+
+  <line x1="490" y1="430" x2="890" y2="430" stroke="#c3c2b7" stroke-width="1.4"/>
+
+  <rect x="525" y="295" width="40" height="135" rx="4" fill="#2a78d6"/>
+  <text x="545" y="289" text-anchor="middle" font-size="11" fill="#52514e">4.5</text>
+  <text x="545" y="448" text-anchor="middle" font-size="11" fill="#6b7280">A팀</text>
+
+  <rect x="605" y="316" width="40" height="114" rx="4" fill="#2a78d6"/>
+  <text x="625" y="310" text-anchor="middle" font-size="11" fill="#52514e">3.8</text>
+  <text x="625" y="448" text-anchor="middle" font-size="11" fill="#6b7280">B팀</text>
+
+  <rect x="685" y="292" width="40" height="138" rx="4" fill="#2a78d6"/>
+  <text x="705" y="286" text-anchor="middle" font-size="11" fill="#52514e">4.6</text>
+  <text x="705" y="448" text-anchor="middle" font-size="11" fill="#6b7280">C팀</text>
+
+  <rect x="765" y="307" width="40" height="123" rx="4" fill="#2a78d6"/>
+  <text x="785" y="301" text-anchor="middle" font-size="11" fill="#52514e">4.1</text>
+  <text x="785" y="448" text-anchor="middle" font-size="11" fill="#6b7280">D팀</text>
+
+  <text x="460" y="486" text-anchor="middle" font-size="11" fill="#9ca3af">※ 이해를 돕기 위해 만든 가상의 예시 데이터입니다. 실제 안건·부서·평가 내용과는 무관합니다.</text>
+</svg>
