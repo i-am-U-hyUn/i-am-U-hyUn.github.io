@@ -1,0 +1,67 @@
+<section id="resume-interactive" class="resume-interactive" aria-label="인터랙티브 이력 소개">
+  <div class="resume-terminal-window">
+    <div class="resume-terminal-titlebar">
+      <span class="rt-dot rt-dot-red"></span>
+      <span class="rt-dot rt-dot-yellow"></span>
+      <span class="rt-dot rt-dot-green"></span>
+      <span class="resume-terminal-path">yuhyeon@portfolio ~ %</span>
+    </div>
+
+    <pre class="resume-terminal-body" id="resume-terminal-body" aria-hidden="true"></pre>
+
+    <noscript>
+      <pre class="resume-terminal-body resume-terminal-noscript">$ whoami
+{{ site.data.resume.name }} — {{ site.data.resume.title }}
+
+$ cat about.md
+{{ site.data.resume.summary | strip }}</pre>
+    </noscript>
+
+    <p class="visually-hidden">
+      {{ site.data.resume.name }} — {{ site.data.resume.title }}. {{ site.data.resume.summary | strip }}
+    </p>
+  </div>
+
+  <div class="resume-terminal-links pending" id="resume-terminal-links">
+    {% for link in site.data.resume.links %}
+      <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="resume-link-btn">
+        <i class="{{ link.icon }} fa-fw"></i> {{ link.label }}
+      </a>
+    {% endfor %}
+  </div>
+
+  {% assign exp_asc = site.data.resume.experience | reverse %}
+  <div class="rt-wrap" id="resume-timeline-interactive">
+    <h2 class="resume-section-title rt-heading"><i class="fas fa-route fa-fw"></i>Career Timeline</h2>
+
+    <div class="rt-line-container" id="rt-line-container">
+      <div class="rt-track"><div class="rt-track-fill"></div></div>
+
+      <ol class="rt-nodes">
+        {% for job in exp_asc %}
+          <li class="rt-node">
+            <span class="rt-dot-marker"></span>
+            <div class="rt-content">
+              <div class="rt-period">{{ job.period }}</div>
+              <h3 class="rt-role">{{ job.role }} <span class="rt-company">· {{ job.company }}</span></h3>
+              <div class="rt-location">{{ job.location }}</div>
+              <ul class="rt-highlights">
+                {% for h in job.highlights limit: 2 %}
+                  <li>{{ h }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script type="application/json" id="resume-terminal-data">
+{
+  "name": {{ site.data.resume.name | jsonify }},
+  "title": {{ site.data.resume.title | jsonify }},
+  "summary": {{ site.data.resume.summary | strip | jsonify }}
+}
+</script>

@@ -5,7 +5,11 @@ layout: default
 {% include lang.html %}
 
 {% if paginator.page == 1 %}
-  {% include resume-card.html %}
+  {% include resume-interactive.html %}
+  <details class="resume-plain-toggle">
+    <summary>정형 이력서 텍스트로 전체 보기</summary>
+    {% include resume-card.html %}
+  </details>
 {% endif %}
 
 {% assign all_pinned = site.posts | where: 'pin', 'true' %}
