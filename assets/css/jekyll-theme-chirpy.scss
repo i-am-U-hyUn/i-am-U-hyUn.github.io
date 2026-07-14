@@ -1,0 +1,121 @@
+---
+---
+
+@use 'abstracts/variables' with (
+  $theme: '{{ site.theme_mode }}'
+);
+
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+
+/* ---------------------------------------------------------------- */
+/* Interactive particle-network theme accents                       */
+/* ---------------------------------------------------------------- */
+
+:root[data-bs-theme='dark'] {
+  --main-bg: #07080d;
+  --link-color: #5eead4;
+  --link-underline-color: rgb(94 234 212 / 35%);
+  --toc-highlight: #5eead4;
+  --tag-hover: rgb(94 234 212 / 12%);
+  --avatar-border-color: rgb(94 234 212 / 55%);
+  --card-hover-bg: rgb(94 234 212 / 8%);
+  --sidebar-hover-bg: rgb(94 234 212 / 8%);
+  --checkbox-checked-color: #5eead4;
+  --clipboard-checked-color: #5eead4;
+}
+
+/* Site title: cyan -> violet gradient */
+#sidebar .site-title {
+  background: linear-gradient(120deg, #5eead4, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Avatar as a pulsing network node */
+#sidebar #avatar {
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px rgb(94 234 212 / 50%),
+    0 0 18px 2px rgb(94 234 212 / 18%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  #sidebar #avatar {
+    animation: node-pulse 3.2s ease-in-out infinite;
+  }
+}
+
+@keyframes node-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgb(94 234 212 / 50%),
+      0 0 18px 2px rgb(94 234 212 / 18%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 2px rgb(167 139 250 / 60%),
+      0 0 30px 8px rgb(167 139 250 / 30%);
+  }
+}
+
+/* Active nav item: accent edge */
+#sidebar ul li.nav-item.active .nav-link {
+  box-shadow: inset 3px 0 0 0 #5eead4;
+}
+
+/* Post/category cards: lift + glow on hover */
+.post-preview,
+.categories.card {
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+@media (hover: hover) {
+  .post-preview:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 12px 32px rgb(0 0 0 / 45%),
+      0 0 0 1px rgb(94 234 212 / 25%),
+      0 0 24px rgb(94 234 212 / 12%);
+  }
+}
+
+/* Scroll-to-top button glow */
+#back-to-top:hover {
+  box-shadow: 0 0 16px rgb(94 234 212 / 40%);
+}
+
+/* Custom scrollbar to match the network palette */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgb(94 234 212 / 40%), rgb(167 139 250 / 40%));
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgb(94 234 212 / 60%), rgb(167 139 250 / 60%));
+}
+
+::selection {
+  background: rgb(94 234 212 / 35%);
+  color: #fff;
+}
