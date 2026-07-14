@@ -46,7 +46,7 @@ $ cat about.md
               <h3 class="rt-role">{{ job.role }} <span class="rt-company">· {{ job.company }}</span></h3>
               <div class="rt-location">{{ job.location }}</div>
               <ul class="rt-highlights">
-                {% for h in job.highlights limit: 2 %}
+                {% for h in job.highlights %}
                   <li>{{ h }}</li>
                 {% endfor %}
               </ul>

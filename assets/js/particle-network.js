@@ -88,9 +88,9 @@
   }
 
   function resizeDipper() {
-    var boxX = width * 0.06;
+    var boxX = width * 0.42;
     var boxY = height * 0.06;
-    var boxW = width * 0.6;
+    var boxW = width * 0.55;
     var boxH = height * 0.3;
 
     dipperStars = BIG_DIPPER.map(function (star, i) {
