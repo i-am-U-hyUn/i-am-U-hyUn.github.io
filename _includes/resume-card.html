@@ -1,0 +1,107 @@
+<div id="resume-card" class="card-wrapper card">
+  <div class="card-body p-3 p-md-4">
+    <div class="resume-header">
+      <div>
+        <h1 class="resume-name">{{ site.data.resume.name }}</h1>
+        <p class="resume-title">{{ site.data.resume.title }}</p>
+      </div>
+      <div class="resume-links">
+        {% for link in site.data.resume.links %}
+          <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="resume-link-btn">
+            <i class="{{ link.icon }} fa-fw"></i> {{ link.label }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <p class="resume-summary">{{ site.data.resume.summary }}</p>
+
+    <div class="resume-grid">
+      <section class="resume-section">
+        <h2 class="resume-section-title"><i class="fas fa-briefcase fa-fw"></i>Experience</h2>
+        <ul class="resume-timeline">
+          {% for job in site.data.resume.experience %}
+            <li>
+              <div class="resume-timeline-head">
+                <strong>{{ job.role }}</strong> · {{ job.company }}
+              </div>
+              <div class="resume-meta">
+                <span class="resume-period">{{ job.period }}</span>
+                <span class="resume-location">{{ job.location }}</span>
+              </div>
+              <ul class="resume-highlights">
+                {% for h in job.highlights %}
+                  <li>{{ h }}</li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="resume-section">
+        <h2 class="resume-section-title"><i class="fas fa-graduation-cap fa-fw"></i>Education</h2>
+        {% for edu in site.data.resume.education %}
+          <div class="resume-edu">
+            <strong>{{ edu.school }}</strong>
+            <div>{{ edu.degree }}</div>
+            <span class="resume-period">{{ edu.period }}</span>
+          </div>
+        {% endfor %}
+
+        <h2 class="resume-section-title mt-3"><i class="fas fa-certificate fa-fw"></i>Certifications</h2>
+        <ul class="resume-list">
+          {% for cert in site.data.resume.certifications %}
+            <li>
+              <strong>{{ cert.name }}</strong> — {{ cert.issuer }}
+              {% if cert.date and cert.date != "" %}
+                <span class="resume-period d-block">{{ cert.date }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+
+        <h2 class="resume-section-title mt-3"><i class="fas fa-code fa-fw"></i>Skills</h2>
+        <div class="resume-skills">
+          {% for skill in site.data.resume.skills %}
+            <span class="resume-skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+
+        {% if site.data.resume.languages %}
+          <h2 class="resume-section-title mt-3"><i class="fas fa-language fa-fw"></i>Languages</h2>
+          <div class="resume-skills">
+            {% for lang in site.data.resume.languages %}
+              <span class="resume-skill-tag">{{ lang }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </section>
+    </div>
+
+    {% if site.data.resume.publications %}
+      <h2 class="resume-section-title mt-3"><i class="fas fa-file-alt fa-fw"></i>Publications &amp; Awards</h2>
+      <ul class="resume-list">
+        {% for pub in site.data.resume.publications %}
+          <li>
+            <strong>{{ pub.title }}</strong>
+            <span class="resume-period d-block">{{ pub.venue }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if site.data.resume.volunteer %}
+      <h2 class="resume-section-title mt-3"><i class="fas fa-hands-helping fa-fw"></i>Volunteer</h2>
+      <ul class="resume-list">
+        {% for v in site.data.resume.volunteer %}
+          <li>
+            <strong>{{ v.title }}</strong> · {{ v.role }}
+            <span class="resume-period d-block">{{ v.org }} · {{ v.period }}</span>
+            <p class="resume-volunteer-desc mt-1 mb-0">{{ v.description }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>

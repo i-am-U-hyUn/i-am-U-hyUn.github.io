@@ -1,0 +1,119 @@
+# Resume data shown at the top of the home page (first page only).
+# Edit this file to keep the résumé section up to date.
+
+name: "Yuhyeon Jeong · 정유현"
+title: "Business Analyst @ MegazoneCloud"
+
+summary: >
+  클라우드 기업 MegazoneCloud의 Business Operations · Process Innovation 조직에서
+  비효율적인 업무 프로세스를 진단하고 자동화·개선하는 일을 합니다. 경북대학교 컴퓨터공학과를
+  졸업했고, 한국·베트남·인도네시아를 넘나든 경험을 바탕으로 기술팀과 비즈니스 이해관계자 사이를
+  연결하는 역할을 즐깁니다. SQL(SQLD), RapidMiner 기반 데이터 분석, Grafana 모니터링, 프로세스
+  모델링을 도구 삼아 문제 진단부터 결과 측정까지 엔드투엔드로 다루며, AI를 활용한 프로세스
+  혁신에 관심이 많습니다.
+
+links:
+  - label: LinkedIn
+    url: "https://www.linkedin.com/in/yuhyeon-jeong-941a732b5"
+    icon: "fab fa-linkedin"
+  - label: GitHub
+    url: "https://github.com/i-am-U-hyUn"
+    icon: "fab fa-github"
+  - label: Email
+    url: "mailto:iloveit8110@naver.com"
+    icon: "fas fa-envelope"
+
+experience:
+  - company: MegazoneCloud
+    role: Business Analyst
+    period: "2026.02 – 현재"
+    location: "대한민국 · 정규직 · 대면근무"
+    highlights:
+      - Business Operations · Process Innovation 조직에서 업무 프로세스 혁신 주도
+      - AS-IS 업무 흐름 분석 및 문서화를 통한 비효율/자동화 포인트 발굴
+      - 크로스펑셔널 팀과 협업하여 TO-BE 프로세스 개선 설계 및 구현
+      - 사내 디지털 전환(DX) 이니셔티브 기여
+  - company: DreamCIS
+    role: IT Validation Associate
+    period: "2026.01 – 2026.02"
+    location: "대한민국 서울 · 정규직 · 대면근무"
+    highlights:
+      - 시스템 신뢰성 및 컴플라이언스 확보를 위한 IT Validation/QA 수행
+      - 기능/회귀 테스트 케이스 설계 및 실행, 결함 문서화·추적
+      - Grafana로 시스템 성능을 모니터링하고 지표를 시각화
+      - 개발팀과 협업하여 버그 수정 사항 검증 및 릴리즈 준비 지원
+  - company: Rikkeisoft
+    role: Project Owner
+    period: "2024.12 – 2025.01"
+    location: "베트남 · 인턴 · 대면근무"
+    highlights:
+      - 글로벌 IT 아웃소싱 기업에서 현지 엔지니어링팀과 한국 고객사를 잇는 역할 수행
+      - 국제 프로젝트 일정 관리 및 산출물 추적
+      - 영어로 클라이언트 미팅을 진행하며 다국적 이해관계자 커뮤니케이션 주도
+
+education:
+  - school: "경북대학교 (Kyungpook National University)"
+    degree: "학사 · Computer Engineering"
+    period: "2021.03 – 2026.02"
+
+certifications:
+  - name: AWS Certified Cloud Practitioner
+    issuer: Amazon Web Services
+    date: "2026.06 발행 · 2029.06 만료"
+  - name: SQLD
+    issuer: 한국데이터산업진흥원
+    date: "2025.06 발행"
+  - name: "부스트코스 <Data Science Projects> 코칭스터디 : 2024"
+    issuer: 네이버 커넥트재단
+    date: "2024.10 발행"
+  - name: 알테어 래피드 마이너 서포터즈 2기
+    issuer: Altair RapidMiner
+    date: "2024.07 발행"
+  - name: Applications & Use Cases Professional Certification
+    issuer: Altair
+    date: ""
+  - name: Data Engineering Professional Certification
+    issuer: Altair
+    date: ""
+  - name: Machine Learning Professional Certification
+    issuer: Altair
+    date: ""
+
+skills:
+  - 클라우드 컴퓨팅
+  - 비즈니스 프로세스 개선
+  - 아마존 웹 서비스(AWS)
+  - 부하테스트
+  - 소프트웨어 QA
+  - SQL
+  - 디지털전략
+  - 워드프레스
+  - 운영관리
+  - 프로젝트 관리
+  - 파이썬
+
+publications:
+  - title: "전해탈지 공정 데이터 기반 머신러닝 제조분야 적용 연구"
+    venue: "한국정보기술학회 · 2025.11 · 우수논문상 (제1저자)"
+  - title: "AI 기반 금융 데이터 분석 및 리포트 생성 시스템 개발"
+    venue: "한국정보처리학회 · 2025.05 (제1저자)"
+
+volunteer:
+  - title: WFK IT Volunteering in Indonesia
+    role: Planning and Marketing Manager
+    org: NIA (National Information Society Agency)
+    period: "2024.08 · 1개월"
+    description: >
+      경북대학교와 인도네시아 Politeknik Negeri Jember 학생들이 협업한 Cyber Pioneers
+      Global IT Project(Team 04)에서 AI 기반 음식 이미지 분류 및 맞춤 식단 추천 웹서비스를
+      기획. 서비스 흐름 설계, 일정 수립, 문화교류 캠페인 운영, 발표자료·데모영상 제작을
+      담당했으며, 결과물이 인도네시아 Jember Smart City의 레스토랑 인프라와 연계되는 데 기여.
+  - title: Executive Team for WFK IT Volunteering in Indonesia
+    role: Executive Team
+    org: NIA (National Information Society Agency)
+    period: "2025.08 · 1개월"
+    description: >
+      크로스펑셔널 팀과의 협업 및 동적인 업무 환경 적응력, 이해관계자 관리 역량을 발휘.
+
+languages:
+  - "English (상급)"
