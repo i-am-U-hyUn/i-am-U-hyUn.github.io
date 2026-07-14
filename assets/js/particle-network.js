@@ -33,6 +33,22 @@
   var POINTER_RADIUS = 160;
   var COLORS = ['94, 234, 212', '167, 139, 250'];
 
+  // Big Dipper (북두칠성) asterism, positioned within a fixed box so the
+  // shape stays recognizable at any viewport size. Coordinates are relative
+  // (0-1) within that box; radii loosely follow real apparent magnitude
+  // (Megrez is the dimmest of the seven).
+  var BIG_DIPPER = [
+    { x: 0.02, y: 0.55, r: 2.4 }, // Dubhe
+    { x: 0.06, y: 0.85, r: 2.1 }, // Merak
+    { x: 0.34, y: 0.92, r: 2.0 }, // Phecda
+    { x: 0.38, y: 0.58, r: 1.5 }, // Megrez
+    { x: 0.62, y: 0.42, r: 2.4 }, // Alioth
+    { x: 0.84, y: 0.18, r: 2.1 }, // Mizar
+    { x: 1.0, y: 0.0, r: 2.3 }  // Alkaid
+  ];
+  var DIPPER_LINKS = [[0, 1], [1, 2], [2, 3], [3, 0], [3, 4], [4, 5], [5, 6]];
+  var dipperStars = [];
+
   function particleCount() {
     var area = width * height;
     var count = Math.round(area / 22000);
@@ -67,6 +83,24 @@
         particles.push(makeParticle());
       }
     }
+
+    resizeDipper();
+  }
+
+  function resizeDipper() {
+    var boxX = width * 0.06;
+    var boxY = height * 0.06;
+    var boxW = width * 0.6;
+    var boxH = height * 0.3;
+
+    dipperStars = BIG_DIPPER.map(function (star, i) {
+      return {
+        x: boxX + star.x * boxW,
+        y: boxY + star.y * boxH,
+        r: star.r,
+        phase: i * 0.8
+      };
+    });
   }
 
   function step() {
@@ -97,8 +131,42 @@
     }
   }
 
-  function draw() {
+  function drawDipper(time) {
+    if (!dipperStars.length) return;
+
+    ctx.strokeStyle = 'rgba(210, 226, 255, 0.32)';
+    ctx.lineWidth = 1;
+    for (var l = 0; l < DIPPER_LINKS.length; l++) {
+      var a = dipperStars[DIPPER_LINKS[l][0]];
+      var b = dipperStars[DIPPER_LINKS[l][1]];
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+
+    for (var i = 0; i < dipperStars.length; i++) {
+      var s = dipperStars[i];
+      var twinkle = reduceMotion ? 1 : 0.72 + 0.28 * Math.sin(time / 900 + s.phase);
+
+      var glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 6);
+      glow.addColorStop(0, 'rgba(255, 255, 255, ' + (0.55 * twinkle) + ')');
+      glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + twinkle + ')';
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function draw(time) {
     ctx.clearRect(0, 0, width, height);
+    drawDipper(time || 0);
 
     for (var i = 0; i < particles.length; i++) {
       var a = particles[i];
@@ -143,9 +211,9 @@
     }
   }
 
-  function frame() {
+  function frame(time) {
     step();
-    draw();
+    draw(time);
     rafId = window.requestAnimationFrame(frame);
   }
 
