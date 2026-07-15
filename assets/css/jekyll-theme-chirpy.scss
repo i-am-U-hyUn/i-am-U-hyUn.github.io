@@ -272,6 +272,15 @@
   opacity: 0.55;
 }
 
+.resume-photo {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgb(94 234 212 / 35%);
+}
+
 .resume-terminal-body {
   margin: 0;
   padding: 1rem 1.1rem 1.25rem;
