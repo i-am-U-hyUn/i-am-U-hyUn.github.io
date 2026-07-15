@@ -4,17 +4,15 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-# 안녕하세요, 0202_hyeon 입니다 👋
+# {{ site.data.resume.name }}
 
-공부한 것을 기록하고, 배운 것을 나누는 공간입니다.
+{{ site.data.resume.title }}
 
 ---
 
 ## About Me
 
-- 📚 자격증 공부 & 개인 학습 기록
-- 💻 개발 공부 및 프로젝트 정리
-- 📝 일상과 생각을 담은 글
+{{ site.data.resume.summary | strip }}
 
 ---
 
