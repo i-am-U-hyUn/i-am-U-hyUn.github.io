@@ -1,4 +1,5 @@
-<section id="resume-interactive" class="resume-interactive" aria-label="인터랙티브 이력 소개">
+{% assign resume = include.data | default: site.data.resume %}
+<section id="resume-interactive" class="resume-interactive" aria-label="{{ include.aria_label | default: '인터랙티브 이력 소개' }}">
   <div class="resume-terminal-window">
     <div class="resume-terminal-titlebar">
       <span class="rt-dot rt-dot-red"></span>
@@ -11,26 +12,26 @@
 
     <noscript>
       <pre class="resume-terminal-body resume-terminal-noscript">$ whoami
-{{ site.data.resume.name }} — {{ site.data.resume.title }}
+{{ resume.name }} — {{ resume.title }}
 
 $ cat about.md
-{{ site.data.resume.summary | strip }}</pre>
+{{ resume.summary | strip }}</pre>
     </noscript>
 
     <p class="visually-hidden">
-      {{ site.data.resume.name }} — {{ site.data.resume.title }}. {{ site.data.resume.summary | strip }}
+      {{ resume.name }} — {{ resume.title }}. {{ resume.summary | strip }}
     </p>
   </div>
 
   <div class="resume-terminal-links pending" id="resume-terminal-links">
-    {% for link in site.data.resume.links %}
+    {% for link in resume.links %}
       <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="resume-link-btn">
         <i class="{{ link.icon }} fa-fw"></i> {{ link.label }}
       </a>
     {% endfor %}
   </div>
 
-  {% assign exp_asc = site.data.resume.experience | reverse %}
+  {% assign exp_asc = resume.experience | reverse %}
   <div class="rt-wrap" id="resume-timeline-interactive">
     <h2 class="resume-section-title rt-heading"><i class="fas fa-route fa-fw"></i>Career Timeline</h2>
 
@@ -60,8 +61,8 @@ $ cat about.md
 
 <script type="application/json" id="resume-terminal-data">
 {
-  "name": {{ site.data.resume.name | jsonify }},
-  "title": {{ site.data.resume.title | jsonify }},
-  "summary": {{ site.data.resume.summary | strip | jsonify }}
+  "name": {{ resume.name | jsonify }},
+  "title": {{ resume.title | jsonify }},
+  "summary": {{ resume.summary | strip | jsonify }}
 }
 </script>

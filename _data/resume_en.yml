@@ -1,0 +1,115 @@
+# English résumé data, shown only on the About page.
+# Keep this in sync with resume.yml (the Korean version shown on the home page).
+
+name: "Yuhyeon Jeong"
+title: "Business Analyst @ MegazoneCloud"
+
+summary: >
+  I work on Process Innovation within the Business Operations team at MegazoneCloud, a cloud
+  company, diagnosing inefficient workflows and driving their automation and improvement. I
+  graduated from Kyungpook National University with a degree in Computer Science, and having
+  lived and worked across Korea, Vietnam, and Indonesia, I enjoy bridging technical teams and
+  business stakeholders. Using SQL (SQLD), RapidMiner-based data analysis, Grafana monitoring,
+  and process modeling, I handle everything end-to-end from diagnosing problems to measuring
+  outcomes, and I'm especially interested in applying AI to process innovation.
+
+links:
+  - label: LinkedIn
+    url: "https://www.linkedin.com/in/yuhyeon-jeong-941a732b5"
+    icon: "fab fa-linkedin"
+  - label: GitHub
+    url: "https://github.com/i-am-U-hyUn"
+    icon: "fab fa-github"
+  - label: Email
+    url: "mailto:iloveit8110@naver.com"
+    icon: "fas fa-envelope"
+
+experience:
+  - company: MegazoneCloud
+    role: "Business Operations Associate / Business Analyst"
+    period: "Feb 2026 – Present"
+    location: "Seoul, South Korea · Full-time · On-site"
+    highlights:
+      - Analyzed cross-departmental operational requirements to standardize processes and document improvement plans; delivered 100+ process improvement initiatives, driving sustained operational efficiency
+      - Audited data consistency across 5 systems to identify performance bottlenecks and establish a detailed process improvement roadmap
+      - Identified sales bottlenecks through data analysis to shape operating strategies for revenue maximization; consolidated company-wide requirements to support C-level decision-making and operational alignment
+  - company: DreamCIS
+    role: IT Validation Associate
+    period: "Jan 2026 – Feb 2026"
+    location: "Seoul, South Korea · Full-time · On-site"
+    highlights:
+      - Performed system validation to ensure compliance with life sciences/pharmaceutical IT standards, and built an IT system operations framework aligned with formal quality standards
+      - Managed validation documentation proving IT systems met formal quality standards, maintaining consistency between procedural documents and final reports to satisfy regulatory requirements
+      - Verified compliance with technical and security standards through real-time performance monitoring on Grafana, proactively identifying system bottleneck risks via real-time data analysis
+  - company: Rikkeisoft
+    role: IT Intern
+    period: "Dec 2024 – Jan 2025"
+    location: "Da Nang, Vietnam · Internship · On-site"
+    highlights:
+      - Gathered core requirements through stakeholder interviews to derive process improvements, and structured and visualized service architecture through system diagram design
+      - Defined key KPIs and monitoring criteria to measure project performance, managing schedules and deliverables with Gantt charts and Trello under a weekly sprint system
+      - Authored project documents including meeting minutes, proposals, and action plans, and led presentations and demo sessions to align stakeholders across teams
+
+education:
+  - school: "Kyungpook National University"
+    degree: "B.S. in Computer Science (specialized track, ABEEK-accredited)"
+    period: "Mar 2021 – Feb 2026"
+
+certifications:
+  - name: AWS Certified Cloud Practitioner
+    issuer: Amazon Web Services
+    date: "Issued Jun 2026 · Expires Jun 2029"
+  - name: SQLD
+    issuer: Korea Data Agency
+    date: "Issued Jun 2025"
+  - name: "Boostcourse <Data Science Projects> Coaching Study: 2024"
+    issuer: NAVER Connect Foundation
+    date: "Issued Oct 2024"
+  - name: Altair RapidMiner Supporters, 2nd Cohort
+    issuer: Altair RapidMiner
+    date: "Issued Jul 2024"
+  - name: Applications & Use Cases Professional Certification
+    issuer: Altair
+    date: ""
+  - name: Data Engineering Professional Certification
+    issuer: Altair
+    date: ""
+  - name: Machine Learning Professional Certification
+    issuer: Altair
+    date: ""
+
+skills:
+  - Cloud Computing
+  - Business Process Improvement
+  - Operations Management
+  - Project Management
+  - SQL
+  - Python
+  - Grafana
+  - Altair RapidMiner
+  - AWS
+  - Google Cloud
+  - GitHub
+  - Notion
+  - Trello
+
+publications:
+  - title: "Machine Learning Application in Manufacturing Based on Electrolytic Degreasing Process Data"
+    venue: "Korean Institute of Information Technology · Nov 2025 · Best Paper Award (1st Author)"
+  - title: "Development of an AI-based Financial Data Analysis and Report Generation System"
+    venue: "Korea Information Processing Society · May 2025 (1st Author)"
+
+volunteer:
+  - title: World Friends Korea (WFK) IT Volunteer Corps
+    role: Vice President / Executive & Volunteer Member
+    org: "NIA (National Information Society Agency) · Indonesia"
+    period: "Jul 2024 – Aug 2025"
+    description: >
+      Led a Smart City Development Initiative in Indonesia, consolidating local project
+      documentation and building a Google Cloud-based collaboration environment to centralize
+      distributed data. Supported the supervising professor's annual business plan and
+      evaluated project feasibility, while managing communication channels to align
+      requirements across diverse stakeholders.
+
+languages:
+  - "English (Fluent) · OPIc IM2 · TOEIC 795"
