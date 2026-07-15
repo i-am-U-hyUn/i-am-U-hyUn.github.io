@@ -130,6 +130,28 @@
   border-image: linear-gradient(120deg, #5eead4, #a78bfa) 1;
 }
 
+.resume-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.resume-card-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgb(94 234 212 / 40%);
+  flex-shrink: 0;
+}
+
+.resume-card-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
 .resume-link-btn {
   display: inline-flex;
   align-items: center;
@@ -270,15 +292,6 @@
   font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 0.78rem;
   opacity: 0.55;
-}
-
-.resume-photo {
-  margin-left: auto;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgb(94 234 212 / 35%);
 }
 
 .resume-terminal-body {
