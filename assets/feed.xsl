@@ -94,16 +94,6 @@
             border: 1px solid rgb(167 139 250 / 30%);
             opacity: 0.85;
           }
-          .subscribe {
-            font-size: 0.8rem;
-            opacity: 0.6;
-            line-height: 1.6;
-          }
-          .subscribe code {
-            background: rgb(255 255 255 / 8%);
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-          }
           .game-wrap { margin: 1.1rem 0 1.4rem; }
           .game-hint {
             font-size: 0.72rem;
@@ -502,12 +492,6 @@
                   </li>
                 </xsl:for-each>
               </ul>
-
-              <br/>
-              <div class="subscribe">
-                <span class="prompt">$</span> RSS 리더로 구독하려면 이 주소를 그대로 등록하세요:<br/>
-                <code><xsl:value-of select="atom:link[@rel='self']/@href"/></code>
-              </div>
             </div>
           </div>
         </main>
