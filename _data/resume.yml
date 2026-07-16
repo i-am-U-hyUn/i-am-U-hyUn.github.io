@@ -50,15 +50,6 @@ experience:
       - 회의록·제안서·실행계획서 등 프로젝트 문서를 작성하고, 발표와 데모 세션을 주도해 유관부서 이해관계자 간 정렬을 이끌어냄
 
 projects:
-  - title: "MZC SpaceFlow"
-    meta: "MegazoneCloud · 사내 프로젝트"
-    description: >
-      AWS 파트너 영업팀의 PoA(Proof of Authority) 문서 작성을 자동화하는 플랫폼. 이메일·회의록 등
-      비정형 데이터를 Bedrock AgentCore 기반 멀티 에이전트로 구조화해, 문서 작성 시간을 5일에서
-      수 시간으로 단축.
-    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
-    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
-
   - title: "InfoFlow ChatBot"
     meta: "Rikkeisoft 인턴십 · 2024.12 – 2025.01"
     description: >
@@ -81,6 +72,15 @@ projects:
       DataStreams Inc와의 산학협력으로 진행한 AI 기반 거시경제 리포트 자동 생성 시스템.
     tags: [Java, Kotlin]
     url: "https://github.com/knu-datastreams"
+
+  - title: "MZC SpaceFlow"
+    meta: "MegazoneCloud · 사내 프로젝트"
+    description: >
+      AWS 파트너 영업팀의 PoA(Proof of Authority) 문서 작성을 자동화하는 플랫폼. 이메일·회의록 등
+      비정형 데이터를 Bedrock AgentCore 기반 멀티 에이전트로 구조화해, 문서 작성 시간을 5일에서
+      수 시간으로 단축.
+    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
+    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
 
   - title: "Stroke Prediction System"
     meta: "개인 프로젝트"

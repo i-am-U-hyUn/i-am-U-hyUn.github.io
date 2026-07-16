@@ -51,16 +51,6 @@ experience:
       - Authored project documents including meeting minutes, proposals, and action plans, and led presentations and demo sessions to align stakeholders across teams
 
 projects:
-  - title: "MZC SpaceFlow"
-    meta: "MegazoneCloud · Internal Project"
-    description: >
-      A platform that automates PoA (Proof of Authority) document creation for AWS partner sales
-      teams. Structures unstructured inputs like emails and meeting notes through a Bedrock
-      AgentCore-based multi-agent system, cutting document creation time from 5 days to a few
-      hours.
-    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
-    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
-
   - title: "InfoFlow ChatBot"
     meta: "Rikkeisoft Internship · Dec 2024 – Jan 2025"
     description: >
@@ -86,6 +76,16 @@ projects:
       collaboration with DataStreams Inc.
     tags: [Java, Kotlin]
     url: "https://github.com/knu-datastreams"
+
+  - title: "MZC SpaceFlow"
+    meta: "MegazoneCloud · Internal Project"
+    description: >
+      A platform that automates PoA (Proof of Authority) document creation for AWS partner sales
+      teams. Structures unstructured inputs like emails and meeting notes through a Bedrock
+      AgentCore-based multi-agent system, cutting document creation time from 5 days to a few
+      hours.
+    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
+    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
 
   - title: "Stroke Prediction System"
     meta: "Personal Project"
