@@ -535,45 +535,48 @@
   }
 }
 
-.resume-plain-toggle {
-  margin: 0 0 1.5rem;
-}
+/* ---------------------------------------------------------------- */
+/* Résumé: narrow-phone tightening                                   */
+/* ---------------------------------------------------------------- */
 
-.resume-plain-toggle > summary {
-  cursor: pointer;
-  list-style: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  opacity: 0.75;
-  padding: 0.4rem 0.8rem;
-  border-radius: 2rem;
-  border: 1px dashed rgb(167 139 250 / 35%);
-  transition:
-    opacity 0.2s ease,
-    border-color 0.2s ease;
-}
+@media (max-width: 575.98px) {
+  .resume-card-header {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
 
-.resume-plain-toggle > summary::-webkit-details-marker {
-  display: none;
-}
+  .resume-card-photo {
+    width: 56px;
+    height: 56px;
+  }
 
-.resume-plain-toggle > summary::after {
-  content: '▸';
-  margin-left: 0.3rem;
-  transition: transform 0.2s ease;
-}
+  .resume-card-name {
+    font-size: 0.95rem;
+  }
 
-.resume-plain-toggle[open] > summary::after {
-  transform: rotate(90deg);
-}
+  .resume-terminal-body {
+    padding: 0.85rem 0.9rem 1rem;
+    font-size: 0.8rem;
+  }
 
-.resume-plain-toggle > summary:hover {
-  opacity: 1;
-  border-color: rgb(167 139 250 / 60%);
-}
+  .rt-line-container {
+    padding-left: 20px;
+  }
 
-.resume-plain-toggle[open] > summary {
-  margin-bottom: 0.9rem;
+  .rt-dot-marker {
+    left: -17px;
+  }
+
+  .rt-role {
+    font-size: 0.92rem;
+  }
+
+  .rt-highlights {
+    padding-left: 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .rt-project-card {
+    padding: 0.85rem 0.9rem;
+  }
 }
