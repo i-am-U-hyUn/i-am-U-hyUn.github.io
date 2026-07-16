@@ -66,12 +66,29 @@ projects:
     tags: [Python, "Machine Learning"]
     url: "https://github.com/KNU-TEAM5/capstone2_BE"
 
+  - title: "VICLab Anti-Spoofing 신원 확인 시스템"
+    meta: "팀/연구실(VICLab) 프로젝트"
+    description: >
+      ID 문서의 얼굴 사진과 실시간 촬영 영상을 대조해 신원을 검증하는 AI 안티스푸핑 시스템. 얼굴
+      임베딩·유사도 계산과 CVPR2024 기반 스푸핑 탐지 모델로 딥페이크·위변조 시도를 차단.
+    tags: [Python, PyTorch, OpenCV, YOLOv8, MediaPipe]
+    url: "https://github.com/i-am-U-hyUn/Anti-Spoofing"
+
   - title: "BigPicture"
     meta: "2025 산학협력프로젝트 · 경북대 5팀 × DataStreams Inc"
     description: >
       DataStreams Inc와의 산학협력으로 진행한 AI 기반 거시경제 리포트 자동 생성 시스템.
     tags: [Java, Kotlin]
     url: "https://github.com/knu-datastreams"
+
+  - title: "Cyber Pioneers 식단 추천 시스템"
+    meta: "한국-인도네시아 학생 협력 프로젝트 · NIA WFK IT봉사단 연계"
+    description: >
+      한국-인도네시아 학생들이 함께 개발한 AI 기반 식단 추천 서비스. 사용자 신체 정보 기반 맞춤
+      식단, 두 나라 음식을 연결하는 유사 음식 추천, ResNet-50 기반 음식 이미지 분석(정확도
+      99.75%)을 제공.
+    tags: [Python, Django, "ResNet-50", SQLite]
+    url: "https://github.com/i-am-U-hyUn/Food"
 
   - title: "MZC SpaceFlow"
     meta: "MegazoneCloud · 사내 프로젝트"
@@ -82,6 +99,14 @@ projects:
     tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
     url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
 
+  - title: "MZC Aero"
+    meta: "MegazoneCloud 연관 · 사이드 프로젝트"
+    description: >
+      영업팀을 위한 데스크톱 상주형 AI 어시스턴트. MEDDPICC 기반 딜 스코어링, 회의 후 CRM
+      업데이트, 이메일 초안 작성, 견적 생성 등 9가지 업무를 자연어 대화로 처리.
+    tags: [Python, "Google Gemini", Salesforce, Streamlit]
+    url: "https://github.com/i-am-U-hyUn/mzc_aero"
+
   - title: "Stroke Prediction System"
     meta: "개인 프로젝트"
     description: >
@@ -89,6 +114,22 @@ projects:
       애플리케이션. FAST 테스트와 위험도 스코어링 기반 조기 진단을 지원.
     tags: ["Python · FastAPI", "React · Vite"]
     url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
+
+  - title: "Canon 출력관리 시스템"
+    meta: "개인 프로젝트 · 엔터프라이즈 시스템 설계"
+    description: >
+      캐논코리아를 모델로 설계한 엔터프라이즈 출력관리 플랫폼. 부서·사용자·장비별 실시간 출력
+      통계, 자동 비용절감 정책, 머신러닝 기반 소모품 예측 유지보수를 제공.
+    tags: ["Spring Boot", ".NET", PostgreSQL, Redis, React]
+    url: "https://github.com/i-am-U-hyUn/Canon"
+
+  - title: "어버이날 카네이션 세레나데"
+    meta: "개인 프로젝트 · 창작"
+    description: >
+      어버이날을 기념해 만든 감성 웹페이지. 설치 없이 브라우저에서 바로 열어볼 수 있는 가벼운
+      정적 페이지.
+    tags: [HTML]
+    url: "https://github.com/i-am-U-hyUn/parent-s-day"
 
   - title: "The Grand Budapest Hotel"
     meta: "개인 프로젝트 · 창작"

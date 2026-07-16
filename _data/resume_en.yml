@@ -69,6 +69,15 @@ projects:
     tags: [Python, "Machine Learning"]
     url: "https://github.com/KNU-TEAM5/capstone2_BE"
 
+  - title: "VICLab Anti-Spoofing Identity Verification"
+    meta: "Team/Lab (VICLab) Project"
+    description: >
+      An AI anti-spoofing system that verifies identity by comparing ID document photos against
+      real-time video captures. Combines face embedding/similarity scoring with a CVPR2024-based
+      spoof-detection model to block deepfake and forged-document attacks.
+    tags: [Python, PyTorch, OpenCV, YOLOv8, MediaPipe]
+    url: "https://github.com/i-am-U-hyUn/Anti-Spoofing"
+
   - title: "BigPicture"
     meta: "2025 Industry-Academia Project · KNU Team 5 × DataStreams Inc"
     description: >
@@ -76,6 +85,15 @@ projects:
       collaboration with DataStreams Inc.
     tags: [Java, Kotlin]
     url: "https://github.com/knu-datastreams"
+
+  - title: "Cyber Pioneers Food Recommendation"
+    meta: "Korea-Indonesia Student Collaboration · Linked to NIA WFK IT Volunteer Corps"
+    description: >
+      An AI-based diet recommendation service built jointly by Korean and Indonesian students.
+      Provides personalized diet plans from user health data, cross-cultural food matching
+      between the two countries, and ResNet-50-based food image analysis (99.75% accuracy).
+    tags: [Python, Django, "ResNet-50", SQLite]
+    url: "https://github.com/i-am-U-hyUn/Food"
 
   - title: "MZC SpaceFlow"
     meta: "MegazoneCloud · Internal Project"
@@ -87,6 +105,15 @@ projects:
     tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
     url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
 
+  - title: "MZC Aero"
+    meta: "MegazoneCloud-related · Side Project"
+    description: >
+      A desktop-resident AI assistant for sales teams. Handles 9 workflows via natural language,
+      including MEDDPICC-based deal scoring, post-meeting CRM updates, email drafting, and quote
+      generation.
+    tags: [Python, "Google Gemini", Salesforce, Streamlit]
+    url: "https://github.com/i-am-U-hyUn/mzc_aero"
+
   - title: "Stroke Prediction System"
     meta: "Personal Project"
     description: >
@@ -95,6 +122,23 @@ projects:
       through FAST testing and weighted risk scoring.
     tags: ["Python · FastAPI", "React · Vite"]
     url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
+
+  - title: "Canon Print Management System"
+    meta: "Personal Project · Enterprise System Design"
+    description: >
+      An enterprise print-management platform modeled on Canon Korea. Provides real-time
+      printing statistics by department/user/device, automated cost-saving policies, and
+      ML-based predictive consumables maintenance.
+    tags: ["Spring Boot", ".NET", PostgreSQL, Redis, React]
+    url: "https://github.com/i-am-U-hyUn/Canon"
+
+  - title: "Parents' Day Carnation Serenade"
+    meta: "Personal Project · Creative"
+    description: >
+      A heartfelt web tribute for Parents' Day. A lightweight static page that opens directly in
+      any browser with no installation required.
+    tags: [HTML]
+    url: "https://github.com/i-am-U-hyUn/parent-s-day"
 
   - title: "The Grand Budapest Hotel"
     meta: "Personal Project · Creative"
