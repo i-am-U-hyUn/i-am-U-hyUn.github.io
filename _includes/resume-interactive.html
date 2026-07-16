@@ -57,6 +57,34 @@ $ cat about.md
       </ol>
     </div>
   </div>
+
+  {% if resume.projects %}
+    <div class="rt-wrap" id="resume-projects">
+      <h2 class="resume-section-title rt-heading"><i class="fas fa-rocket fa-fw"></i>Featured Projects</h2>
+
+      <div class="rt-projects-grid" id="rt-projects-grid">
+        {% for p in resume.projects %}
+          <div class="rt-project-card" style="transition-delay: {{ forloop.index0 | times: 70 }}ms">
+            <div class="rt-project-head">
+              <h3 class="rt-project-title">{{ p.title }}</h3>
+              {% if p.meta %}<div class="rt-project-meta">{{ p.meta }}</div>{% endif %}
+            </div>
+            <p class="rt-project-desc">{{ p.description | strip }}</p>
+            {% if p.tags %}
+              <div class="resume-skills rt-project-tags">
+                {% for t in p.tags %}<span class="resume-skill-tag">{{ t }}</span>{% endfor %}
+              </div>
+            {% endif %}
+            {% if p.url %}
+              <a href="{{ p.url }}" target="_blank" rel="noopener noreferrer" class="resume-link-btn rt-project-link">
+                <i class="fab fa-github fa-fw"></i> Repository
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 </section>
 
 <script type="application/json" id="resume-terminal-data">

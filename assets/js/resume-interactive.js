@@ -147,8 +147,37 @@
     }
   }
 
+  function initProjects() {
+    var cards = document.querySelectorAll('.rt-project-card');
+    if (!cards.length) return;
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      cards.forEach(function (c) {
+        c.classList.add('is-visible');
+      });
+      return;
+    }
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    cards.forEach(function (c) {
+      io.observe(c);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     initTerminal();
     initTimeline();
+    initProjects();
   });
 })();

@@ -49,6 +49,54 @@ experience:
       - 프로젝트 성과 측정을 위한 핵심 KPI와 모니터링 기준을 정의하고, 주간 스프린트 체계에서 Gantt 차트와 Trello로 일정과 산출물을 관리
       - 회의록·제안서·실행계획서 등 프로젝트 문서를 작성하고, 발표와 데모 세션을 주도해 유관부서 이해관계자 간 정렬을 이끌어냄
 
+projects:
+  - title: "MZC SpaceFlow"
+    meta: "MegazoneCloud · 사내 프로젝트"
+    description: >
+      AWS 파트너 영업팀의 PoA(Proof of Authority) 문서 작성을 자동화하는 플랫폼. 이메일·회의록 등
+      비정형 데이터를 Bedrock AgentCore 기반 멀티 에이전트로 구조화해, 문서 작성 시간을 5일에서
+      수 시간으로 단축.
+    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
+    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
+
+  - title: "Stroke Prediction System"
+    meta: "개인 프로젝트"
+    description: >
+      환자·보호자·의사·관리자 등 역할별 대시보드를 제공하는 뇌졸중 예측·모니터링 헬스케어 웹
+      애플리케이션. FAST 테스트와 위험도 스코어링 기반 조기 진단을 지원.
+    tags: ["Python · FastAPI", "React · Vite"]
+    url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
+
+  - title: "BigPicture"
+    meta: "2025 산학협력프로젝트 · 경북대 5팀 × DataStreams Inc"
+    description: >
+      DataStreams Inc와의 산학협력으로 진행한 AI 기반 거시경제 리포트 자동 생성 시스템.
+    tags: [Java, Kotlin]
+    url: "https://github.com/knu-datastreams"
+
+  - title: "전해탈지 공정 머신러닝 품질예측"
+    meta: "캡스톤 디자인 · 경북대 TEAM5"
+    description: >
+      전해탈지 공정 데이터를 기반으로 머신러닝 품질예측 모델을 구축하고 웹으로 시각화. 관련 연구로
+      한국정보기술학회 우수논문상을 수상.
+    tags: [Python, "Machine Learning"]
+    url: "https://github.com/KNU-TEAM5/capstone2_BE"
+
+  - title: "InfoFlow ChatBot"
+    meta: "Rikkeisoft 인턴십 · 2024.12 – 2025.01"
+    description: >
+      2,000명 이상의 임직원과 500개 이상의 프로젝트 데이터를 다루는 Rikkeisoft를 위한 생성형 AI
+      챗봇. 600개 이상의 프로세스·프로젝트 문서를 RAG로 연결해 사내 문의 응답을 자동화.
+    tags: [Python, TypeScript, RAG]
+    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
+
+  - title: "The Grand Budapest Hotel"
+    meta: "개인 프로젝트 · 창작"
+    description: >
+      영화 <그랜드 부다페스트 호텔>의 스토리를 인터랙티브 웹 페이지로 재구성한 창작 프로젝트.
+    tags: [HTML]
+    url: "https://github.com/i-am-U-hyUn/The-Grand-Budapest-Hotel"
+
 education:
   - school: "경북대학교 (Kyungpook National University)"
     degree: "학사 · Computer Science (특성화 트랙, ABEEK 인증)"

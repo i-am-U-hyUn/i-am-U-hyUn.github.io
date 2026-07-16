@@ -50,6 +50,60 @@ experience:
       - Defined key KPIs and monitoring criteria to measure project performance, managing schedules and deliverables with Gantt charts and Trello under a weekly sprint system
       - Authored project documents including meeting minutes, proposals, and action plans, and led presentations and demo sessions to align stakeholders across teams
 
+projects:
+  - title: "MZC SpaceFlow"
+    meta: "MegazoneCloud · Internal Project"
+    description: >
+      A platform that automates PoA (Proof of Authority) document creation for AWS partner sales
+      teams. Structures unstructured inputs like emails and meeting notes through a Bedrock
+      AgentCore-based multi-agent system, cutting document creation time from 5 days to a few
+      hours.
+    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
+    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
+
+  - title: "Stroke Prediction System"
+    meta: "Personal Project"
+    description: >
+      A healthcare web app for stroke risk prediction and monitoring, with role-specific
+      dashboards for patients, caregivers, doctors, and administrators. Supports early diagnosis
+      through FAST testing and weighted risk scoring.
+    tags: ["Python · FastAPI", "React · Vite"]
+    url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
+
+  - title: "BigPicture"
+    meta: "2025 Industry-Academia Project · KNU Team 5 × DataStreams Inc"
+    description: >
+      An AI-driven macroeconomic report generation system built in an industry-academia
+      collaboration with DataStreams Inc.
+    tags: [Java, Kotlin]
+    url: "https://github.com/knu-datastreams"
+
+  - title: "ML-Based Quality Prediction for Electrolytic Degreasing"
+    meta: "Capstone Design · KNU TEAM5"
+    description: >
+      Built a machine learning quality-prediction model from electrolytic degreasing process
+      data and visualized it on the web. The related research won the Best Paper Award at the
+      Korean Institute of Information Technology.
+    tags: [Python, "Machine Learning"]
+    url: "https://github.com/KNU-TEAM5/capstone2_BE"
+
+  - title: "InfoFlow ChatBot"
+    meta: "Rikkeisoft Internship · Dec 2024 – Jan 2025"
+    description: >
+      A generative AI chatbot for Rikkeisoft, a company with over 2,000 employees and 500+
+      projects. Connects 600+ process and project documents via RAG to automate internal
+      inquiry responses.
+    tags: [Python, TypeScript, RAG]
+    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
+
+  - title: "The Grand Budapest Hotel"
+    meta: "Personal Project · Creative"
+    description: >
+      A creative project recreating the story of the film "The Grand Budapest Hotel" as an
+      interactive web page.
+    tags: [HTML]
+    url: "https://github.com/i-am-U-hyUn/The-Grand-Budapest-Hotel"
+
 education:
   - school: "Kyungpook National University"
     degree: "B.S. in Computer Science (specialized track, ABEEK-accredited)"
