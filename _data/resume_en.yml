@@ -61,22 +61,14 @@ projects:
     tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
     url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
 
-  - title: "Stroke Prediction System"
-    meta: "Personal Project"
+  - title: "InfoFlow ChatBot"
+    meta: "Rikkeisoft Internship · Dec 2024 – Jan 2025"
     description: >
-      A healthcare web app for stroke risk prediction and monitoring, with role-specific
-      dashboards for patients, caregivers, doctors, and administrators. Supports early diagnosis
-      through FAST testing and weighted risk scoring.
-    tags: ["Python · FastAPI", "React · Vite"]
-    url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
-
-  - title: "BigPicture"
-    meta: "2025 Industry-Academia Project · KNU Team 5 × DataStreams Inc"
-    description: >
-      An AI-driven macroeconomic report generation system built in an industry-academia
-      collaboration with DataStreams Inc.
-    tags: [Java, Kotlin]
-    url: "https://github.com/knu-datastreams"
+      A generative AI chatbot for Rikkeisoft, a company with over 2,000 employees and 500+
+      projects. Connects 600+ process and project documents via RAG to automate internal
+      inquiry responses.
+    tags: [Python, TypeScript, RAG]
+    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
 
   - title: "ML-Based Quality Prediction for Electrolytic Degreasing"
     meta: "Capstone Design · KNU TEAM5"
@@ -87,14 +79,22 @@ projects:
     tags: [Python, "Machine Learning"]
     url: "https://github.com/KNU-TEAM5/capstone2_BE"
 
-  - title: "InfoFlow ChatBot"
-    meta: "Rikkeisoft Internship · Dec 2024 – Jan 2025"
+  - title: "BigPicture"
+    meta: "2025 Industry-Academia Project · KNU Team 5 × DataStreams Inc"
     description: >
-      A generative AI chatbot for Rikkeisoft, a company with over 2,000 employees and 500+
-      projects. Connects 600+ process and project documents via RAG to automate internal
-      inquiry responses.
-    tags: [Python, TypeScript, RAG]
-    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
+      An AI-driven macroeconomic report generation system built in an industry-academia
+      collaboration with DataStreams Inc.
+    tags: [Java, Kotlin]
+    url: "https://github.com/knu-datastreams"
+
+  - title: "Stroke Prediction System"
+    meta: "Personal Project"
+    description: >
+      A healthcare web app for stroke risk prediction and monitoring, with role-specific
+      dashboards for patients, caregivers, doctors, and administrators. Supports early diagnosis
+      through FAST testing and weighted risk scoring.
+    tags: ["Python · FastAPI", "React · Vite"]
+    url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
 
   - title: "The Grand Budapest Hotel"
     meta: "Personal Project · Creative"

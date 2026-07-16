@@ -59,20 +59,13 @@ projects:
     tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
     url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
 
-  - title: "Stroke Prediction System"
-    meta: "개인 프로젝트"
+  - title: "InfoFlow ChatBot"
+    meta: "Rikkeisoft 인턴십 · 2024.12 – 2025.01"
     description: >
-      환자·보호자·의사·관리자 등 역할별 대시보드를 제공하는 뇌졸중 예측·모니터링 헬스케어 웹
-      애플리케이션. FAST 테스트와 위험도 스코어링 기반 조기 진단을 지원.
-    tags: ["Python · FastAPI", "React · Vite"]
-    url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
-
-  - title: "BigPicture"
-    meta: "2025 산학협력프로젝트 · 경북대 5팀 × DataStreams Inc"
-    description: >
-      DataStreams Inc와의 산학협력으로 진행한 AI 기반 거시경제 리포트 자동 생성 시스템.
-    tags: [Java, Kotlin]
-    url: "https://github.com/knu-datastreams"
+      2,000명 이상의 임직원과 500개 이상의 프로젝트 데이터를 다루는 Rikkeisoft를 위한 생성형 AI
+      챗봇. 600개 이상의 프로세스·프로젝트 문서를 RAG로 연결해 사내 문의 응답을 자동화.
+    tags: [Python, TypeScript, RAG]
+    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
 
   - title: "전해탈지 공정 머신러닝 품질예측"
     meta: "캡스톤 디자인 · 경북대 TEAM5"
@@ -82,13 +75,20 @@ projects:
     tags: [Python, "Machine Learning"]
     url: "https://github.com/KNU-TEAM5/capstone2_BE"
 
-  - title: "InfoFlow ChatBot"
-    meta: "Rikkeisoft 인턴십 · 2024.12 – 2025.01"
+  - title: "BigPicture"
+    meta: "2025 산학협력프로젝트 · 경북대 5팀 × DataStreams Inc"
     description: >
-      2,000명 이상의 임직원과 500개 이상의 프로젝트 데이터를 다루는 Rikkeisoft를 위한 생성형 AI
-      챗봇. 600개 이상의 프로세스·프로젝트 문서를 RAG로 연결해 사내 문의 응답을 자동화.
-    tags: [Python, TypeScript, RAG]
-    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
+      DataStreams Inc와의 산학협력으로 진행한 AI 기반 거시경제 리포트 자동 생성 시스템.
+    tags: [Java, Kotlin]
+    url: "https://github.com/knu-datastreams"
+
+  - title: "Stroke Prediction System"
+    meta: "개인 프로젝트"
+    description: >
+      환자·보호자·의사·관리자 등 역할별 대시보드를 제공하는 뇌졸중 예측·모니터링 헬스케어 웹
+      애플리케이션. FAST 테스트와 위험도 스코어링 기반 조기 진단을 지원.
+    tags: ["Python · FastAPI", "React · Vite"]
+    url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
 
   - title: "The Grand Budapest Hotel"
     meta: "개인 프로젝트 · 창작"
