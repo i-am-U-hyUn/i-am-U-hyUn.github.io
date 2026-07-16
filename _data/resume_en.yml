@@ -51,14 +51,15 @@ experience:
       - Authored project documents including meeting minutes, proposals, and action plans, and led presentations and demo sessions to align stakeholders across teams
 
 projects:
-  - title: "InfoFlow ChatBot"
-    meta: "Rikkeisoft Internship · Dec 2024 – Jan 2025"
+  - title: "MZC SpaceFlow"
+    meta: "MegazoneCloud · Internal Project"
     description: >
-      A generative AI chatbot for Rikkeisoft, a company with over 2,000 employees and 500+
-      projects. Connects 600+ process and project documents via RAG to automate internal
-      inquiry responses.
-    tags: [Python, TypeScript, RAG]
-    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
+      A platform that automates PoA (Proof of Authority) document creation for AWS partner sales
+      teams. Structures unstructured inputs like emails and meeting notes through a Bedrock
+      AgentCore-based multi-agent system, cutting document creation time from 5 days to a few
+      hours.
+    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
+    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
 
   - title: "ML-Based Quality Prediction for Electrolytic Degreasing"
     meta: "Capstone Design · KNU TEAM5"
@@ -69,6 +70,24 @@ projects:
     tags: [Python, "Machine Learning"]
     url: "https://github.com/KNU-TEAM5/capstone2_BE"
 
+  - title: "InfoFlow ChatBot"
+    meta: "Rikkeisoft Internship · Dec 2024 – Jan 2025"
+    description: >
+      A generative AI chatbot for Rikkeisoft, a company with over 2,000 employees and 500+
+      projects. Connects 600+ process and project documents via RAG to automate internal
+      inquiry responses.
+    tags: [Python, TypeScript, RAG]
+    url: "https://github.com/InfoFlow-ChatBot-RikkeiSoft-Corp/InfoFlow-ChatBot"
+
+  - title: "MZC Aero"
+    meta: "MegazoneCloud-related · Side Project"
+    description: >
+      A desktop-resident AI assistant for sales teams. Handles 9 workflows via natural language,
+      including MEDDPICC-based deal scoring, post-meeting CRM updates, email drafting, and quote
+      generation.
+    tags: [Python, "Google Gemini", Salesforce, Streamlit]
+    url: "https://github.com/i-am-U-hyUn/mzc_aero"
+
   - title: "VICLab Anti-Spoofing Identity Verification"
     meta: "Team/Lab (VICLab) Project"
     description: >
@@ -77,6 +96,15 @@ projects:
       spoof-detection model to block deepfake and forged-document attacks.
     tags: [Python, PyTorch, OpenCV, YOLOv8, MediaPipe]
     url: "https://github.com/i-am-U-hyUn/Anti-Spoofing"
+
+  - title: "Canon Print Management System"
+    meta: "Personal Project · Enterprise System Design"
+    description: >
+      An enterprise print-management platform modeled on Canon Korea. Provides real-time
+      printing statistics by department/user/device, automated cost-saving policies, and
+      ML-based predictive consumables maintenance.
+    tags: ["Spring Boot", ".NET", PostgreSQL, Redis, React]
+    url: "https://github.com/i-am-U-hyUn/Canon"
 
   - title: "BigPicture"
     meta: "2025 Industry-Academia Project · KNU Team 5 × DataStreams Inc"
@@ -95,25 +123,6 @@ projects:
     tags: [Python, Django, "ResNet-50", SQLite]
     url: "https://github.com/i-am-U-hyUn/Food"
 
-  - title: "MZC SpaceFlow"
-    meta: "MegazoneCloud · Internal Project"
-    description: >
-      A platform that automates PoA (Proof of Authority) document creation for AWS partner sales
-      teams. Structures unstructured inputs like emails and meeting notes through a Bedrock
-      AgentCore-based multi-agent system, cutting document creation time from 5 days to a few
-      hours.
-    tags: [Python, TypeScript, "Amazon Bedrock AgentCore", "AWS Lambda", React]
-    url: "https://github.com/i-am-U-hyUn/MZC_Space_Flow"
-
-  - title: "MZC Aero"
-    meta: "MegazoneCloud-related · Side Project"
-    description: >
-      A desktop-resident AI assistant for sales teams. Handles 9 workflows via natural language,
-      including MEDDPICC-based deal scoring, post-meeting CRM updates, email drafting, and quote
-      generation.
-    tags: [Python, "Google Gemini", Salesforce, Streamlit]
-    url: "https://github.com/i-am-U-hyUn/mzc_aero"
-
   - title: "Stroke Prediction System"
     meta: "Personal Project"
     description: >
@@ -122,15 +131,6 @@ projects:
       through FAST testing and weighted risk scoring.
     tags: ["Python · FastAPI", "React · Vite"]
     url: "https://github.com/i-am-U-hyUn/Stroke-Prediction-System"
-
-  - title: "Canon Print Management System"
-    meta: "Personal Project · Enterprise System Design"
-    description: >
-      An enterprise print-management platform modeled on Canon Korea. Provides real-time
-      printing statistics by department/user/device, automated cost-saving policies, and
-      ML-based predictive consumables maintenance.
-    tags: ["Spring Boot", ".NET", PostgreSQL, Redis, React]
-    url: "https://github.com/i-am-U-hyUn/Canon"
 
   - title: "Parents' Day Carnation Serenade"
     meta: "Personal Project · Creative"
