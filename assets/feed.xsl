@@ -149,9 +149,76 @@
                     var W = canvas.width, H = canvas.height;
                     var groundY = H - 20;
                     var GRAVITY = 0.9;
-                    var JUMP_V = -11;
+                    var JUMP_V = -12;
+                    var PIXEL = 3;
 
-                    var dino = { x: 30, w: 22, h: 30, y: 0, vy: 0, onGround: true };
+                    // 도트 스프라이트: '#' 몸통, 'o' 눈(구멍), '.' 빈 칸
+                    var DINO_FRAME_A = [
+                      ".....................",
+                      ".....................",
+                      ".........#####.......",
+                      "........#######......",
+                      ".......#########.....",
+                      ".......####.o###.....",
+                      ".......##########....",
+                      "......############...",
+                      ".....##############..",
+                      "....################.",
+                      "...#################.",
+                      "..##################.",
+                      ".###################.",
+                      "###############......",
+                      "###############......",
+                      "###..#####..###......",
+                      "###..#####..###......",
+                      ".#...#####...##......",
+                      ".....#####...........",
+                      "....................."
+                    ];
+                    var DINO_FRAME_B = [
+                      ".....................",
+                      ".....................",
+                      ".........#####.......",
+                      "........#######......",
+                      ".......#########.....",
+                      ".......####.o###.....",
+                      ".......##########....",
+                      "......############...",
+                      ".....##############..",
+                      "....################.",
+                      "...#################.",
+                      "..##################.",
+                      ".###################.",
+                      "###############......",
+                      "###############......",
+                      "####..####...###.....",
+                      "..##..####...###.....",
+                      "..##..####....#......",
+                      "..##..####...........",
+                      "....................."
+                    ];
+                    var CACTUS_SPRITE = [
+                      "...........",
+                      "...........",
+                      "....#......",
+                      "....#......",
+                      "..#.#......",
+                      "..#.#..#...",
+                      "..#.#..#...",
+                      "..###..#...",
+                      "....#..#...",
+                      "....####...",
+                      "....#......",
+                      "....#......",
+                      "....#......"
+                    ];
+
+                    var DINO_W = DINO_FRAME_A[0].length * PIXEL;
+                    var DINO_H = DINO_FRAME_A.length * PIXEL;
+                    var CACTUS_W = CACTUS_SPRITE[0].length * PIXEL;
+                    var CACTUS_H = CACTUS_SPRITE.length * PIXEL;
+
+                    var dino = { x: 30, w: DINO_W, h: DINO_H, y: 0, vy: 0, onGround: true };
                     var obstacles = [];
                     var spawnTimer = 0;
                     var speed = 4;
@@ -190,8 +257,7 @@
                     });
 
                     function spawnObstacle() {
-                      var h = 20 + Math.random() * 20;
-                      obstacles.push({ x: W + 10, y: groundY - h, w: 14, h: h });
+                      obstacles.push({ x: W + 10, y: groundY - CACTUS_H, w: CACTUS_W, h: CACTUS_H });
                     }
 
                     function update() {
@@ -230,6 +296,18 @@
                       if (frame % 300 === 0) speed += 0.4;
                     }
 
+                    function drawSprite(sprite, x, y, color) {
+                      ctx.fillStyle = color;
+                      for (var r = 0; r < sprite.length; r++) {
+                        var row = sprite[r];
+                        for (var c = 0; c < row.length; c++) {
+                          if (row.charAt(c) === '#') {
+                            ctx.fillRect(x + c * PIXEL, y + r * PIXEL, PIXEL, PIXEL);
+                          }
+                        }
+                      }
+                    }
+
                     function draw() {
                       ctx.clearRect(0, 0, W, H);
 
@@ -239,13 +317,15 @@
                       ctx.lineTo(W, groundY + 0.5);
                       ctx.stroke();
 
-                      ctx.fillStyle = '#5eead4';
-                      ctx.fillRect(dino.x, dino.y, dino.w, dino.h);
+                      var dinoSprite = DINO_FRAME_A;
+                      if (started && !over && dino.onGround) {
+                        dinoSprite = Math.floor(frame / 6) % 2 === 0 ? DINO_FRAME_A : DINO_FRAME_B;
+                      }
+                      drawSprite(dinoSprite, dino.x, dino.y, '#5eead4');
 
-                      ctx.fillStyle = '#a78bfa';
                       for (var i = 0; i < obstacles.length; i++) {
                         var o = obstacles[i];
-                        ctx.fillRect(o.x, o.y, o.w, o.h);
+                        drawSprite(CACTUS_SPRITE, o.x, o.y, '#a78bfa');
                       }
 
                       ctx.fillStyle = '#e5edff';
