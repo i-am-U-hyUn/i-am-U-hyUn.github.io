@@ -85,10 +85,10 @@
     trigger.setAttribute('aria-haspopup', 'true');
     trigger.setAttribute('aria-expanded', 'false');
     trigger.setAttribute('aria-controls', 'site-menu-overlay');
-    trigger.setAttribute('aria-label', '사이트 지도 열기');
+    trigger.setAttribute('aria-label', 'Menu 열기');
     trigger.innerHTML =
       '<i class="fas fa-meteor fa-fw" aria-hidden="true"></i>' +
-      '<span>사이트 지도</span>';
+      '<span>Menu</span>';
 
     var overlay = document.createElement('div');
     overlay.id = 'site-menu-overlay';

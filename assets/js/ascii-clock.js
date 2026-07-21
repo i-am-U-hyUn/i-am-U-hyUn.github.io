@@ -1,6 +1,6 @@
 /**
  * Small ASCII-style live clock + monthly calendar, mounted in the
- * sidebar between the nav and the social icon row.
+ * right-hand panel just below the "Trending Tags" section.
  */
 (function () {
   'use strict';
@@ -49,12 +49,12 @@
       '<div class="ascii-clock-date" id="ascii-clock-date"></div>' +
       '<pre class="ascii-cal" id="ascii-cal" aria-hidden="true"></pre>';
 
-    var sidebarBottom = document.querySelector('#sidebar .sidebar-bottom');
-    if (sidebarBottom && sidebarBottom.parentNode) {
-      sidebarBottom.parentNode.insertBefore(widget, sidebarBottom);
-    } else {
-      var sidebar = document.getElementById('sidebar');
-      if (sidebar) sidebar.appendChild(widget);
+    var panelAccess = document.querySelector('#panel-wrapper .access');
+    var panel = document.getElementById('panel-wrapper');
+    if (panelAccess) {
+      panelAccess.appendChild(widget);
+    } else if (panel) {
+      panel.appendChild(widget);
     }
 
     return widget;
