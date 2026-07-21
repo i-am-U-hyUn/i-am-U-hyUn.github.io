@@ -152,15 +152,15 @@
     var STAR_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
     var TRAIL_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
     var POINTER_RADIUS = 150;
-    var MAX_TRAIL = 50;
+    var MAX_TRAIL = 80;
 
     function spawnTrail(x, y) {
       trail.push({
         x: x,
         y: y,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        r: 1 + Math.random() * 1.7,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        r: 2.4 + Math.random() * 2.8,
         life: 1,
         color: TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)]
       });
@@ -250,7 +250,7 @@
         var p = trail[t];
         p.x += p.vx;
         p.y += p.vy;
-        p.life -= 0.04;
+        p.life -= 0.028;
         if (p.life <= 0) trail.splice(t, 1);
       }
     }
@@ -312,9 +312,18 @@
       for (var ti = 0; ti < trail.length; ti++) {
         var p = trail[ti];
         var alpha = Math.max(0, p.life);
+
+        var glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4.5);
+        glow.addColorStop(0, 'rgba(' + p.color + ', ' + alpha * 0.55 + ')');
+        glow.addColorStop(1, 'rgba(' + p.color + ', 0)');
+        ctx.fillStyle = glow;
         ctx.beginPath();
-        ctx.fillStyle = 'rgba(' + p.color + ', ' + alpha * 0.9 + ')';
-        ctx.arc(p.x, p.y, p.r * alpha, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r * 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+        ctx.arc(p.x, p.y, p.r * alpha * 0.6, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -336,7 +345,8 @@
       pointer.y = e.clientY - rect.top;
       pointer.active = true;
 
-      if (Math.random() < 0.6) spawnTrail(pointer.x, pointer.y);
+      spawnTrail(pointer.x, pointer.y);
+      if (Math.random() < 0.5) spawnTrail(pointer.x, pointer.y);
     }
 
     function onPointerLeave() {
