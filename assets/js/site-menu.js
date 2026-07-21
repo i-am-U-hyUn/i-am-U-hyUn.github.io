@@ -265,15 +265,7 @@
           var pdy = s.y - pointer.y;
           var pdist = Math.sqrt(pdx * pdx + pdy * pdy);
           if (pdist < POINTER_RADIUS) {
-            var near = 1 - pdist / POINTER_RADIUS;
-            twinkle = Math.min(1, twinkle + near * 0.6);
-
-            ctx.strokeStyle = 'rgba(94, 234, 212, ' + near * 0.3 + ')';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(s.x, s.y);
-            ctx.lineTo(pointer.x, pointer.y);
-            ctx.stroke();
+            twinkle = Math.min(1, twinkle + (1 - pdist / POINTER_RADIUS) * 0.6);
           }
         }
 
