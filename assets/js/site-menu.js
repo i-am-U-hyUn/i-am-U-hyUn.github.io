@@ -153,12 +153,21 @@
     var resizeTimer = null;
     var pointer = { x: -9999, y: -9999, active: false };
 
-    var STAR_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
-    var TRAIL_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
+    var SPACE_STAR_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
+    var NEON_STAR_COLORS = ['255, 255, 255', '57, 255, 20', '0, 255, 255', '255, 0, 234'];
     var POINTER_RADIUS = 150;
     var MAX_TRAIL = 80;
 
+    function isCyberpunk() {
+      return document.documentElement.classList.contains('cyberpunk-mode');
+    }
+
+    function palette() {
+      return isCyberpunk() ? NEON_STAR_COLORS : SPACE_STAR_COLORS;
+    }
+
     function spawnTrail(x, y) {
+      var colors = palette();
       trail.push({
         x: x,
         y: y,
@@ -166,7 +175,7 @@
         vy: (Math.random() - 0.5) * 0.6,
         r: 2.4 + Math.random() * 2.8,
         life: 1,
-        color: TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)]
+        color: colors[Math.floor(Math.random() * colors.length)]
       });
       if (trail.length > MAX_TRAIL) trail.shift();
     }
@@ -178,9 +187,13 @@
     }
 
     function pickColor() {
+      var colors = palette();
       var roll = Math.random();
-      if (roll < 0.6) return STAR_COLORS[0];
-      return roll < 0.8 ? STAR_COLORS[1] : STAR_COLORS[2];
+      if (roll < 0.6) return colors[0];
+      if (colors.length > 3) {
+        return colors[1 + Math.floor(Math.random() * (colors.length - 1))];
+      }
+      return roll < 0.8 ? colors[1] : colors[2];
     }
 
     function makeStar(i) {
@@ -216,11 +229,14 @@
       for (var i = 0; i < target; i++) stars.push(makeStar(i));
 
       var span = Math.max(width, height);
+      var neon = isCyberpunk();
+      var nebA = neon ? '255, 0, 234' : '167, 139, 250';
+      var nebB = neon ? '57, 255, 20' : '94, 234, 212';
       nebulae = [
-        { x: width * 0.18, y: height * 0.25, r: span * 0.5, color: '167, 139, 250', base: 0.36 },
-        { x: width * 0.82, y: height * 0.7, r: span * 0.55, color: '94, 234, 212', base: 0.32 },
-        { x: width * 0.6, y: height * 0.85, r: span * 0.4, color: '167, 139, 250', base: 0.22 },
-        { x: width * 0.4, y: height * 0.1, r: span * 0.35, color: '94, 234, 212', base: 0.2 }
+        { x: width * 0.18, y: height * 0.25, r: span * 0.5, color: nebA, base: 0.36 },
+        { x: width * 0.82, y: height * 0.7, r: span * 0.55, color: nebB, base: 0.32 },
+        { x: width * 0.6, y: height * 0.85, r: span * 0.4, color: nebA, base: 0.22 },
+        { x: width * 0.4, y: height * 0.1, r: span * 0.35, color: nebB, base: 0.2 }
       ];
     }
 
