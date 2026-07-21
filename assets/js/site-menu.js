@@ -87,7 +87,7 @@
     trigger.setAttribute('aria-controls', 'site-menu-overlay');
     trigger.setAttribute('aria-label', 'Menu 열기');
     trigger.innerHTML =
-      '<i class="fas fa-meteor fa-fw" aria-hidden="true"></i>' +
+      '<i class="fas fa-bars fa-fw" aria-hidden="true"></i>' +
       '<span>Menu</span>';
 
     var overlay = document.createElement('div');

@@ -1,6 +1,8 @@
 /**
- * Small ASCII-style live clock + monthly calendar, mounted in the
- * right-hand panel just below the "Trending Tags" section.
+ * Small ASCII-style live clock + monthly calendar. Mounts below the
+ * right-hand panel's "Trending Tags" section when that panel is laid
+ * out (xl+ viewports), otherwise falls back to the sidebar so it's
+ * still visible on narrower windows.
  */
 (function () {
   'use strict';
@@ -39,6 +41,36 @@
     return lines.join('\n');
   }
 
+  function isVisible(el) {
+    if (!el) return false;
+    return el.offsetParent !== null && window.getComputedStyle(el).display !== 'none';
+  }
+
+  function mount(widget) {
+    var panelAccess = document.querySelector('#panel-wrapper .access');
+    var panel = document.getElementById('panel-wrapper');
+    var target = panelAccess || panel;
+
+    // The right-hand panel is only laid out on wide (xl+) viewports; on
+    // anything narrower it's hidden, so fall back to the sidebar instead
+    // of mounting somewhere invisible.
+    if (target && isVisible(target)) {
+      if (widget.parentNode !== target) target.appendChild(widget);
+      return;
+    }
+
+    var sidebarBottom = document.querySelector('#sidebar .sidebar-bottom');
+    if (sidebarBottom && sidebarBottom.parentNode) {
+      if (widget.parentNode !== sidebarBottom.parentNode || widget.nextSibling !== sidebarBottom) {
+        sidebarBottom.parentNode.insertBefore(widget, sidebarBottom);
+      }
+      return;
+    }
+
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar && widget.parentNode !== sidebar) sidebar.appendChild(widget);
+  }
+
   function build() {
     var widget = document.createElement('div');
     widget.className = 'ascii-clock';
@@ -49,13 +81,15 @@
       '<div class="ascii-clock-date" id="ascii-clock-date"></div>' +
       '<pre class="ascii-cal" id="ascii-cal" aria-hidden="true"></pre>';
 
-    var panelAccess = document.querySelector('#panel-wrapper .access');
-    var panel = document.getElementById('panel-wrapper');
-    if (panelAccess) {
-      panelAccess.appendChild(widget);
-    } else if (panel) {
-      panel.appendChild(widget);
-    }
+    mount(widget);
+
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(function () {
+        mount(widget);
+      }, 150);
+    });
 
     return widget;
   }
