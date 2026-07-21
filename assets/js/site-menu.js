@@ -146,8 +146,10 @@
     var nebulae = [];
     var rafId = null;
     var resizeTimer = null;
+    var pointer = { x: -9999, y: -9999, active: false };
 
     var STAR_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
+    var POINTER_RADIUS = 150;
 
     function starCount() {
       var area = width * height;
@@ -163,9 +165,13 @@
 
     function makeStar(i) {
       var glow = i % 14 === 0; // a sparse subset of brighter "hero" stars
+      var driftAngle = Math.random() * Math.PI * 2;
+      var driftSpeed = 0.03 + Math.random() * 0.05;
       return {
         x: Math.random() * width,
         y: Math.random() * height,
+        vx: Math.cos(driftAngle) * driftSpeed,
+        vy: Math.sin(driftAngle) * driftSpeed,
         r: glow ? 1.6 + Math.random() * 1.6 : 0.5 + Math.random() * 1.3,
         baseAlpha: glow ? 0.85 + Math.random() * 0.15 : 0.55 + Math.random() * 0.4,
         speed: 0.4 + Math.random() * 1.1,
@@ -198,6 +204,33 @@
       ];
     }
 
+    function step() {
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+
+        if (pointer.active) {
+          var dx = s.x - pointer.x;
+          var dy = s.y - pointer.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < POINTER_RADIUS && dist > 0.01) {
+            var force = ((POINTER_RADIUS - dist) / POINTER_RADIUS) * 0.05;
+            s.vx += (dx / dist) * force;
+            s.vy += (dy / dist) * force;
+          }
+        }
+
+        s.vx *= 0.97;
+        s.vy *= 0.97;
+        s.x += s.vx;
+        s.y += s.vy;
+
+        if (s.x < 0) { s.x = 0; s.vx *= -1; }
+        if (s.x > width) { s.x = width; s.vx *= -1; }
+        if (s.y < 0) { s.y = 0; s.vy *= -1; }
+        if (s.y > height) { s.y = height; s.vy *= -1; }
+      }
+    }
+
     function draw(time) {
       ctx.clearRect(0, 0, width, height);
 
@@ -227,6 +260,23 @@
           ? s.baseAlpha
           : s.baseAlpha * (0.6 + 0.4 * Math.sin((time / 1000) * s.speed + s.phase));
 
+        if (pointer.active) {
+          var pdx = s.x - pointer.x;
+          var pdy = s.y - pointer.y;
+          var pdist = Math.sqrt(pdx * pdx + pdy * pdy);
+          if (pdist < POINTER_RADIUS) {
+            var near = 1 - pdist / POINTER_RADIUS;
+            twinkle = Math.min(1, twinkle + near * 0.6);
+
+            ctx.strokeStyle = 'rgba(94, 234, 212, ' + near * 0.3 + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(s.x, s.y);
+            ctx.lineTo(pointer.x, pointer.y);
+            ctx.stroke();
+          }
+        }
+
         if (s.glow) {
           var halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 5);
           halo.addColorStop(0, 'rgba(' + s.color + ', ' + twinkle * 0.5 + ')');
@@ -245,6 +295,7 @@
     }
 
     function frame(time) {
+      step();
       draw(time);
       rafId = window.requestAnimationFrame(frame);
     }
@@ -254,13 +305,26 @@
       resizeTimer = window.setTimeout(resize, 150);
     }
 
+    function onPointerMove(e) {
+      var rect = canvas.getBoundingClientRect();
+      pointer.x = e.clientX - rect.left;
+      pointer.y = e.clientY - rect.top;
+      pointer.active = true;
+    }
+
+    function onPointerLeave() {
+      pointer.active = false;
+    }
+
     function start() {
       resize();
       window.addEventListener('resize', onResize);
       if (reduceMotion) {
         draw(0);
-      } else if (rafId === null) {
-        rafId = window.requestAnimationFrame(frame);
+      } else {
+        overlay.addEventListener('pointermove', onPointerMove);
+        overlay.addEventListener('pointerleave', onPointerLeave);
+        if (rafId === null) rafId = window.requestAnimationFrame(frame);
       }
     }
 
@@ -270,6 +334,9 @@
         rafId = null;
       }
       window.removeEventListener('resize', onResize);
+      overlay.removeEventListener('pointermove', onPointerMove);
+      overlay.removeEventListener('pointerleave', onPointerLeave);
+      pointer.active = false;
     }
 
     return { start: start, stop: stop };
