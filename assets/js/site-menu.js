@@ -87,9 +87,8 @@
     trigger.setAttribute('aria-controls', 'site-menu-overlay');
     trigger.setAttribute('aria-label', '사이트 지도 열기');
     trigger.innerHTML =
-      '<span class="site-menu-trigger-bar"></span>' +
-      '<span class="site-menu-trigger-bar"></span>' +
-      '<span class="site-menu-trigger-bar"></span>';
+      '<i class="fas fa-meteor fa-fw" aria-hidden="true"></i>' +
+      '<span>사이트 지도</span>';
 
     var overlay = document.createElement('div');
     overlay.id = 'site-menu-overlay';
@@ -121,8 +120,8 @@
         '<i class="fas fa-times" aria-hidden="true"></i>' +
       '</button>' +
       '<div class="site-menu-header">' +
-        '<p class="site-menu-eyebrow">Welcome to my universe\'s trip</p>' +
-        '<h2 class="site-menu-heading">Hi, I\'m New Ya, but my name is Yuya.<br>I-am-U-hyUn, but my name is Yuhyeon.<br>어디부터 둘러볼까요?</h2>' +
+        '<h2 class="site-menu-heading">Welcome To My Portfolio &amp; Blog</h2>' +
+        '<p class="site-menu-eyebrow">Hi, I\'m New Ya, but my name is Yuya.<br>I-am-U-hyUn, but my name is Yuhyeon.</p>' +
       '</div>' +
       '<div class="site-menu-solar" role="navigation" aria-label="사이트 지도">' +
         '<div class="site-menu-sun" aria-hidden="true"></div>' +
@@ -130,7 +129,12 @@
       '</div>' +
       '<p class="site-menu-hint">숫자키 1–5 또는 ESC</p>';
 
-    document.body.appendChild(trigger);
+    var profileWrapper = document.querySelector('#sidebar .profile-wrapper');
+    if (profileWrapper) {
+      profileWrapper.appendChild(trigger);
+    } else {
+      document.body.appendChild(trigger);
+    }
     document.body.appendChild(overlay);
 
     return { trigger: trigger, overlay: overlay };
