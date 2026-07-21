@@ -344,6 +344,13 @@
                     var over = false;
                     var frame = 0;
 
+                    var LEMON_GOAL = 22;
+                    var lemons = 0;
+                    var won = false;
+                    var glitchFrames = 0;
+                    var GLITCH_DURATION = 45;
+                    var popups = [];
+
                     function reset() {
                       dino.y = groundY - dino.h;
                       dino.vy = 0;
@@ -354,6 +361,18 @@
                       score = 0;
                       over = false;
                       frame = 0;
+                      lemons = 0;
+                      won = false;
+                      glitchFrames = 0;
+                      popups = [];
+                    }
+
+                    function updatePopups() {
+                      for (var k = popups.length - 1; k >= 0; k--) {
+                        popups[k].y -= 1;
+                        popups[k].life -= 0.03;
+                        if (popups[k].life <= 0) popups.splice(k, 1);
+                      }
                     }
 
                     function jumpOrStart() {
@@ -378,7 +397,11 @@
                     }
 
                     function update() {
-                      if (!started || over) return;
+                      if (!started) return;
+                      if (over) {
+                        if (glitchFrames > 0) glitchFrames--;
+                        return;
+                      }
                       frame++;
                       dino.vy += GRAVITY;
                       dino.y += dino.vy;
@@ -399,11 +422,19 @@
                         if (obstacles[i].x + obstacles[i].w < 0) {
                           obstacles.splice(i, 1);
                           score++;
+                          lemons++;
+                          popups.push({ x: dino.x + dino.w / 2, y: dino.y, life: 1 });
+                          if (lemons >= LEMON_GOAL) {
+                            won = true;
+                            over = true;
+                            glitchFrames = GLITCH_DURATION;
+                            initMatrix();
+                          }
                         }
                       }
 
                       var hitX = dino.x + DINO_HIT_OFFSET_X;
-                      for (var j = 0; j < obstacles.length; j++) {
+                      for (var j = 0; j < obstacles.length && !over; j++) {
                         var o = obstacles[j];
                         var oHitX = o.x + CACTUS_HIT_OFFSET_X;
                         var oHitY = groundY - CACTUS_HIT_H;
@@ -413,6 +444,7 @@
                         }
                       }
 
+                      updatePopups();
                       if (frame % 300 === 0) speed += 0.4;
                     }
 
@@ -428,8 +460,100 @@
                       }
                     }
 
+                    var MATRIX_CHARS = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ$#%&アイウエオカキクケコサシスセソ';
+                    var MATRIX_FONT_SIZE = 10;
+                    var matrixCols = [];
+
+                    function initMatrix() {
+                      var count = Math.ceil(W / MATRIX_FONT_SIZE);
+                      matrixCols = [];
+                      for (var i = 0; i < count; i++) {
+                        matrixCols.push({ y: Math.random() * -H, speed: 2 + Math.random() * 3 });
+                      }
+                    }
+
+                    function drawMatrixRain() {
+                      ctx.font = MATRIX_FONT_SIZE + 'px monospace';
+                      for (var i = 0; i < matrixCols.length; i++) {
+                        var col = matrixCols[i];
+                        var x = i * MATRIX_FONT_SIZE;
+                        ctx.fillStyle = 'rgba(57,255,20,0.9)';
+                        ctx.fillText(MATRIX_CHARS.charAt(Math.floor(Math.random() * MATRIX_CHARS.length)), x, col.y);
+                        ctx.fillStyle = 'rgba(57,255,20,0.25)';
+                        ctx.fillText(MATRIX_CHARS.charAt(Math.floor(Math.random() * MATRIX_CHARS.length)), x, col.y - MATRIX_FONT_SIZE);
+                        col.y += col.speed;
+                        if (col.y > H + MATRIX_FONT_SIZE) col.y = Math.random() * -H * 0.5;
+                      }
+                    }
+
+                    function drawHudCorners() {
+                      var m = 9, len = 15;
+                      ctx.strokeStyle = 'rgba(0,255,255,0.75)';
+                      ctx.lineWidth = 2;
+                      ctx.beginPath();
+                      ctx.moveTo(m, m + len); ctx.lineTo(m, m); ctx.lineTo(m + len, m);
+                      ctx.moveTo(W - m - len, m); ctx.lineTo(W - m, m); ctx.lineTo(W - m, m + len);
+                      ctx.moveTo(m, H - m - len); ctx.lineTo(m, H - m); ctx.lineTo(m + len, H - m);
+                      ctx.moveTo(W - m - len, H - m); ctx.lineTo(W - m, H - m); ctx.lineTo(W - m, H - m - len);
+                      ctx.stroke();
+                    }
+
+                    function drawWinSequence() {
+                      ctx.fillStyle = '#000';
+                      ctx.fillRect(0, 0, W, H);
+                      drawMatrixRain();
+
+                      if (glitchFrames > 0) {
+                        for (var s = 0; s < 5; s++) {
+                          var sy = Math.floor(Math.random() * H);
+                          var sh = 3 + Math.floor(Math.random() * 8);
+                          var dx = (Math.random() - 0.5) * 26;
+                          ctx.drawImage(canvas, 0, sy, W, sh, dx, sy, W, sh);
+                        }
+                        ctx.globalCompositeOperation = 'lighter';
+                        ctx.fillStyle = 'rgba(0,255,255,0.08)';
+                        ctx.fillRect(-3, 0, W, H);
+                        ctx.fillStyle = 'rgba(255,0,234,0.08)';
+                        ctx.fillRect(3, 0, W, H);
+                        ctx.globalCompositeOperation = 'source-over';
+                      }
+
+                      drawHudCorners();
+
+                      var settled = glitchFrames <= 0;
+                      var showText = settled || Math.random() < 0.8;
+                      if (showText) {
+                        var jx = settled ? 0 : (Math.random() - 0.5) * 5;
+                        var jy = settled ? 0 : (Math.random() - 0.5) * 5;
+
+                        ctx.textAlign = 'center';
+                        ctx.font = 'bold 20px monospace';
+                        ctx.fillStyle = 'rgba(255,0,234,0.9)';
+                        ctx.fillText('YOU WIN', W / 2 + 2 + jx, H / 2 - 20 + jy);
+                        ctx.fillStyle = 'rgba(0,255,255,0.9)';
+                        ctx.fillText('YOU WIN', W / 2 - 2 + jx, H / 2 - 20 + jy);
+                        ctx.fillStyle = '#39ff14';
+                        ctx.fillText('YOU WIN', W / 2 + jx, H / 2 - 20 + jy);
+
+                        if (settled) {
+                          ctx.font = '13px monospace';
+                          ctx.fillStyle = '#39ff14';
+                          ctx.fillText('🍋 레모네이드 완성! 🥤', W / 2, H / 2 + 4);
+                          ctx.font = '11px monospace';
+                          ctx.fillStyle = 'rgba(57,255,20,0.7)';
+                          ctx.fillText('다시 탭 / Space로 재도전', W / 2, H / 2 + 24);
+                        }
+                        ctx.textAlign = 'start';
+                      }
+                    }
+
                     function draw() {
                       ctx.clearRect(0, 0, W, H);
+
+                      if (won) {
+                        drawWinSequence();
+                        return;
+                      }
 
                       ctx.strokeStyle = 'rgba(94,234,212,0.35)';
                       ctx.beginPath();
@@ -447,6 +571,17 @@
                         var o = obstacles[i];
                         drawSprite(CACTUS_SPRITE, o.x, o.y, '#a78bfa');
                       }
+
+                      for (var p = 0; p < popups.length; p++) {
+                        var pu = popups[p];
+                        ctx.fillStyle = 'rgba(254,240,138,' + Math.max(0, pu.life) + ')';
+                        ctx.font = '12px monospace';
+                        ctx.fillText('+1 🍋', pu.x - 14, pu.y - 6);
+                      }
+
+                      ctx.fillStyle = '#fef08a';
+                      ctx.font = '12px monospace';
+                      ctx.fillText('🍋 ' + lemons + '/' + LEMON_GOAL, 8, 18);
 
                       ctx.fillStyle = '#e5edff';
                       ctx.font = '12px monospace';
