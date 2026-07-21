@@ -122,7 +122,7 @@
       '</button>' +
       '<div class="site-menu-header">' +
         '<p class="site-menu-eyebrow">Welcome to my universe\'s trip</p>' +
-        '<h2 class="site-menu-heading">I\'m Yuya, i-am-U-hyUn... 아니, 정유현이에요. 어디부터 둘러볼까요?</h2>' +
+        '<h2 class="site-menu-heading">Hi, I\'m New Ya, but my name is Yuya.<br>I-am-U-hyUn, but my name is Yuhyeon.<br>어디부터 둘러볼까요?</h2>' +
       '</div>' +
       '<div class="site-menu-solar" role="navigation" aria-label="사이트 지도">' +
         '<div class="site-menu-sun" aria-hidden="true"></div>' +
