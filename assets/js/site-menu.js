@@ -1,17 +1,81 @@
 /**
- * Site-wide menu: a floating trigger button that opens a fullscreen
- * overlay with large nav links (blog / résumé). Links carry a cursor
- * -following glow, and the destination section pulses once reached.
+ * Site cover: a solar-system map of the site's main sections (mirrors
+ * the sidebar tabs). Shows automatically once on a visitor's first
+ * landing on the home page, and can be reopened any time via the
+ * floating trigger button.
  */
 (function () {
   'use strict';
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var STORAGE_KEY = 'site-cover-seen-v1';
 
-  var LINKS = [
-    { href: '/#post-list', index: '01', title: '블로그 글', desc: '공부, 자격증, 일상 기록', key: '1' },
-    { href: '/#resume-interactive', index: '02', title: '이력서 · 포트폴리오', desc: '경력, 프로젝트, 기술 스택', key: '2' }
+  var PLANETS = [
+    {
+      href: '/',
+      icon: 'fas fa-home',
+      title: 'HOME',
+      desc: '블로그 · 이력서',
+      key: '1',
+      radius: 17,
+      duration: 22,
+      size: 62
+    },
+    {
+      href: '/categories/',
+      icon: 'fas fa-stream',
+      title: 'CATEGORIES',
+      desc: '주제별 글 모음',
+      key: '2',
+      radius: 26,
+      duration: 30,
+      size: 52
+    },
+    {
+      href: '/tags/',
+      icon: 'fas fa-tags',
+      title: 'TAGS',
+      desc: '태그로 찾기',
+      key: '3',
+      radius: 34,
+      duration: 38,
+      size: 48
+    },
+    {
+      href: '/archives/',
+      icon: 'fas fa-archive',
+      title: 'ARCHIVES',
+      desc: '연도별 전체 글',
+      key: '4',
+      radius: 41,
+      duration: 46,
+      size: 48
+    },
+    {
+      href: '/about/',
+      icon: 'fas fa-info-circle',
+      title: 'ABOUT',
+      desc: '소개',
+      key: '5',
+      radius: 47,
+      duration: 54,
+      size: 46
+    }
   ];
+
+  function hasSeenCover() {
+    try {
+      return window.localStorage.getItem(STORAGE_KEY) === '1';
+    } catch (e) {
+      return true;
+    }
+  }
+
+  function markCoverSeen() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, '1');
+    } catch (e) {}
+  }
 
   function buildMenu() {
     var trigger = document.createElement('button');
@@ -21,7 +85,7 @@
     trigger.setAttribute('aria-haspopup', 'true');
     trigger.setAttribute('aria-expanded', 'false');
     trigger.setAttribute('aria-controls', 'site-menu-overlay');
-    trigger.setAttribute('aria-label', '메뉴 열기');
+    trigger.setAttribute('aria-label', '사이트 지도 열기');
     trigger.innerHTML =
       '<span class="site-menu-trigger-bar"></span>' +
       '<span class="site-menu-trigger-bar"></span>' +
@@ -32,66 +96,43 @@
     overlay.className = 'site-menu-overlay';
     overlay.setAttribute('aria-hidden', 'true');
 
-    var linksHtml = LINKS.map(function (link, i) {
+    var planetsHtml = PLANETS.map(function (p, i) {
+      var angle = Math.round((360 / PLANETS.length) * i);
       return (
-        '<a href="' + link.href + '" class="site-menu-link" data-key="' + link.key + '" ' +
-          'style="transition-delay:' + (reduceMotion ? 0 : i * 70) + 'ms">' +
-          '<span class="site-menu-link-glow" aria-hidden="true"></span>' +
-          '<span class="site-menu-link-index">' + link.index + '</span>' +
-          '<span class="site-menu-link-body">' +
-            '<span class="site-menu-link-text">' + link.title + '</span>' +
-            '<span class="site-menu-link-desc">' + link.desc + '</span>' +
-          '</span>' +
-        '</a>'
+        '<div class="site-menu-orbit" style="--orbit-radius:' + p.radius + '%;--orbit-duration:' + p.duration + 's;--orbit-angle:' + angle + 'deg">' +
+          '<span class="site-menu-orbit-ring" aria-hidden="true"></span>' +
+          '<div class="site-menu-orbit-spin">' +
+            '<a href="' + p.href + '" class="site-menu-planet" data-key="' + p.key + '" ' +
+              'style="--planet-size:' + p.size + 'px" aria-label="' + p.title + ' — ' + p.desc + '">' +
+              '<i class="' + p.icon + ' fa-fw" aria-hidden="true"></i>' +
+              '<span class="site-menu-planet-label">' +
+                '<span class="site-menu-planet-title">' + p.title + '</span>' +
+                '<span class="site-menu-planet-desc">' + p.desc + '</span>' +
+              '</span>' +
+            '</a>' +
+          '</div>' +
+        '</div>'
       );
     }).join('');
 
     overlay.innerHTML =
-      '<button type="button" class="site-menu-close" aria-label="메뉴 닫기">' +
+      '<button type="button" class="site-menu-close" aria-label="닫기">' +
         '<i class="fas fa-times" aria-hidden="true"></i>' +
       '</button>' +
-      '<nav class="site-menu-nav" aria-label="주요 메뉴">' + linksHtml + '</nav>' +
-      '<p class="site-menu-hint">숫자키 1 / 2 또는 ESC</p>';
+      '<div class="site-menu-header">' +
+        '<p class="site-menu-eyebrow">Yuhyeon\'s Daily Log</p>' +
+        '<h2 class="site-menu-heading">둘러보고 싶은 곳을 선택하세요</h2>' +
+      '</div>' +
+      '<div class="site-menu-solar" role="navigation" aria-label="사이트 지도">' +
+        '<div class="site-menu-sun" aria-hidden="true"></div>' +
+        planetsHtml +
+      '</div>' +
+      '<p class="site-menu-hint">숫자키 1–5 또는 ESC</p>';
 
     document.body.appendChild(trigger);
     document.body.appendChild(overlay);
 
     return { trigger: trigger, overlay: overlay };
-  }
-
-  function initGlow(overlay) {
-    if (reduceMotion) return;
-
-    var links = overlay.querySelectorAll('.site-menu-link');
-    links.forEach(function (link) {
-      link.addEventListener('pointermove', function (e) {
-        var rect = link.getBoundingClientRect();
-        link.style.setProperty('--mx', e.clientX - rect.left + 'px');
-        link.style.setProperty('--my', e.clientY - rect.top + 'px');
-      });
-    });
-  }
-
-  function pulseTarget(id) {
-    var target = document.getElementById(id);
-    if (!target || reduceMotion) return;
-
-    target.classList.remove('scroll-target-pulse');
-    void target.offsetWidth; // restart the animation if triggered again
-    target.classList.add('scroll-target-pulse');
-
-    window.setTimeout(function () {
-      target.classList.remove('scroll-target-pulse');
-    }, 1200);
-  }
-
-  function initHashArrivalPulse() {
-    var id = (window.location.hash || '').slice(1);
-    if (id === 'post-list' || id === 'resume-interactive') {
-      window.setTimeout(function () {
-        pulseTarget(id);
-      }, 300);
-    }
   }
 
   function initMenu(trigger, overlay) {
@@ -119,7 +160,9 @@
       trigger.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('site-menu-locked');
-      if (lastFocused && lastFocused.focus) lastFocused.focus();
+      if (lastFocused && lastFocused.focus && lastFocused !== document.body) {
+        lastFocused.focus();
+      }
     }
 
     trigger.addEventListener('click', function () {
@@ -136,27 +179,8 @@
       if (e.target === overlay) closeMenu();
     });
 
-    overlay.querySelectorAll('.site-menu-link').forEach(function (link) {
-      link.addEventListener('click', function (e) {
-        var href = link.getAttribute('href');
-        var samePageAnchor = href.indexOf('/#') === 0 && window.location.pathname === '/';
-        closeMenu();
-
-        if (samePageAnchor) {
-          e.preventDefault();
-          var id = href.slice(2);
-          var target = document.getElementById(id);
-          if (target) {
-            target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
-            window.setTimeout(
-              function () {
-                pulseTarget(id);
-              },
-              reduceMotion ? 0 : 450
-            );
-          }
-        }
-      });
+    overlay.querySelectorAll('.site-menu-planet').forEach(function (link) {
+      link.addEventListener('click', closeMenu);
     });
 
     document.addEventListener('keydown', function (e) {
@@ -170,16 +194,22 @@
       var tag = e.target && e.target.tagName;
       if (tag && /input|textarea/i.test(tag)) return;
 
-      var match = overlay.querySelector('.site-menu-link[data-key="' + e.key + '"]');
+      var match = overlay.querySelector('.site-menu-planet[data-key="' + e.key + '"]');
       if (match) match.click();
     });
+
+    return { open: openMenu, close: closeMenu };
   }
 
   function init() {
     var built = buildMenu();
-    initGlow(built.overlay);
-    initMenu(built.trigger, built.overlay);
-    initHashArrivalPulse();
+    var controls = initMenu(built.trigger, built.overlay);
+
+    var onHomeTop = window.location.pathname === '/' && !window.location.hash;
+    if (onHomeTop && !hasSeenCover()) {
+      markCoverSeen();
+      window.setTimeout(controls.open, reduceMotion ? 0 : 400);
+    }
   }
 
   if (document.readyState === 'loading') {
