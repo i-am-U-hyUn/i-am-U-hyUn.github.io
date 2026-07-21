@@ -121,8 +121,8 @@
         '<i class="fas fa-times" aria-hidden="true"></i>' +
       '</button>' +
       '<div class="site-menu-header">' +
-        '<p class="site-menu-eyebrow">Yuhyeon\'s Daily Log</p>' +
-        '<h2 class="site-menu-heading">둘러보고 싶은 곳을 선택하세요</h2>' +
+        '<p class="site-menu-eyebrow">Welcome to my universe\'s trip</p>' +
+        '<h2 class="site-menu-heading">I\'m Yuya, i-am-U-hyUn... 아니, 정유현이에요. 어디부터 둘러볼까요?</h2>' +
       '</div>' +
       '<div class="site-menu-solar" role="navigation" aria-label="사이트 지도">' +
         '<div class="site-menu-sun" aria-hidden="true"></div>' +
