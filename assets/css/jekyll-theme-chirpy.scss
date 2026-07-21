@@ -216,8 +216,16 @@ body.site-menu-locked {
   overflow: hidden;
 }
 
+.site-menu-galaxy {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+}
+
 .site-menu-close {
   position: absolute;
+  z-index: 2;
   top: 1.25rem;
   right: 1.25rem;
   width: 2.6rem;
@@ -245,6 +253,8 @@ body.site-menu-locked {
 }
 
 .site-menu-header {
+  position: relative;
+  z-index: 1;
   text-align: center;
   margin-bottom: 0.5rem;
 }
@@ -267,6 +277,7 @@ body.site-menu-locked {
 
 .site-menu-solar {
   position: relative;
+  z-index: 1;
   width: min(92vw, 78vh, 640px);
   aspect-ratio: 1;
   margin: 0.5rem auto;
@@ -444,6 +455,8 @@ body.site-menu-locked {
 }
 
 .site-menu-hint {
+  position: relative;
+  z-index: 1;
   margin: 0.75rem 0 0;
   font-size: 0.78rem;
   opacity: 0.4;

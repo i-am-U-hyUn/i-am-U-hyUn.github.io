@@ -116,6 +116,7 @@
     }).join('');
 
     overlay.innerHTML =
+      '<canvas class="site-menu-galaxy" aria-hidden="true"></canvas>' +
       '<button type="button" class="site-menu-close" aria-label="닫기">' +
         '<i class="fas fa-times" aria-hidden="true"></i>' +
       '</button>' +
@@ -135,8 +136,133 @@
     return { trigger: trigger, overlay: overlay };
   }
 
+  function initGalaxy(overlay) {
+    var canvas = overlay.querySelector('.site-menu-galaxy');
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var width = 0;
+    var height = 0;
+    var stars = [];
+    var nebulae = [];
+    var rafId = null;
+    var resizeTimer = null;
+
+    var STAR_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
+
+    function starCount() {
+      var area = width * height;
+      var count = Math.round(area / 2600);
+      return Math.max(160, Math.min(count, 420));
+    }
+
+    function pickColor() {
+      var roll = Math.random();
+      if (roll < 0.72) return STAR_COLORS[0];
+      return roll < 0.86 ? STAR_COLORS[1] : STAR_COLORS[2];
+    }
+
+    function makeStar() {
+      return {
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: 0.4 + Math.random() * 1.4,
+        baseAlpha: 0.35 + Math.random() * 0.55,
+        speed: 0.4 + Math.random() * 1.1,
+        phase: Math.random() * Math.PI * 2,
+        color: pickColor()
+      };
+    }
+
+    function resize() {
+      var rect = overlay.getBoundingClientRect();
+      width = rect.width || window.innerWidth;
+      height = rect.height || window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      stars = [];
+      var target = starCount();
+      while (stars.length < target) stars.push(makeStar());
+
+      var span = Math.max(width, height);
+      nebulae = [
+        { x: width * 0.22, y: height * 0.28, r: span * 0.42, color: '167, 139, 250', base: 0.11 },
+        { x: width * 0.8, y: height * 0.72, r: span * 0.46, color: '94, 234, 212', base: 0.1 },
+        { x: width * 0.55, y: height * 0.12, r: span * 0.3, color: '94, 234, 212', base: 0.06 }
+      ];
+    }
+
+    function draw(time) {
+      ctx.clearRect(0, 0, width, height);
+
+      var bg = ctx.createRadialGradient(
+        width / 2, height * 0.4, 0,
+        width / 2, height * 0.4, Math.max(width, height) * 0.75
+      );
+      bg.addColorStop(0, 'rgb(20, 18, 34)');
+      bg.addColorStop(1, 'rgb(4, 5, 9)');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, width, height);
+
+      for (var n = 0; n < nebulae.length; n++) {
+        var neb = nebulae[n];
+        var pulse = reduceMotion ? 1 : 0.75 + 0.25 * Math.sin(time / 4200 + n * 2);
+        var grad = ctx.createRadialGradient(neb.x, neb.y, 0, neb.x, neb.y, neb.r);
+        grad.addColorStop(0, 'rgba(' + neb.color + ', ' + (neb.base * pulse) + ')');
+        grad.addColorStop(1, 'rgba(' + neb.color + ', 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var twinkle = reduceMotion
+          ? s.baseAlpha
+          : s.baseAlpha * (0.6 + 0.4 * Math.sin((time / 1000) * s.speed + s.phase));
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(' + s.color + ', ' + twinkle + ')';
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function frame(time) {
+      draw(time);
+      rafId = window.requestAnimationFrame(frame);
+    }
+
+    function onResize() {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(resize, 150);
+    }
+
+    function start() {
+      resize();
+      window.addEventListener('resize', onResize);
+      if (reduceMotion) {
+        draw(0);
+      } else if (rafId === null) {
+        rafId = window.requestAnimationFrame(frame);
+      }
+    }
+
+    function stop() {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      window.removeEventListener('resize', onResize);
+    }
+
+    return { start: start, stop: stop };
+  }
+
   function initMenu(trigger, overlay) {
     var closeBtn = overlay.querySelector('.site-menu-close');
+    var galaxy = initGalaxy(overlay);
     var lastFocused = null;
 
     function openMenu() {
@@ -146,6 +272,7 @@
       trigger.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
       document.body.classList.add('site-menu-locked');
+      galaxy.start();
       window.setTimeout(
         function () {
           closeBtn.focus();
@@ -160,6 +287,7 @@
       trigger.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('site-menu-locked');
+      galaxy.stop();
       if (lastFocused && lastFocused.focus && lastFocused !== document.body) {
         lastFocused.focus();
       }
