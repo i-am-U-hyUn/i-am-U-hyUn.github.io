@@ -988,3 +988,124 @@ body.site-menu-locked {
   padding: 0 2px;
   font-weight: 700;
 }
+
+/* ---------------------------------------------------------------- */
+/* Cyberpunk mode: unlocked by winning the RSS dino game              */
+/* ---------------------------------------------------------------- */
+
+:root.cyberpunk-mode {
+  --link-color: #39ff14;
+  --link-underline-color: rgb(57 255 20 / 35%);
+  --toc-highlight: #ff00ea;
+  --tag-hover: rgb(0 255 255 / 12%);
+  --avatar-border-color: rgb(255 0 234 / 55%);
+  --card-hover-bg: rgb(57 255 20 / 8%);
+  --sidebar-hover-bg: rgb(0 255 255 / 8%);
+  --checkbox-checked-color: #39ff14;
+  --clipboard-checked-color: #39ff14;
+}
+
+.cyberpunk-mode #particle-network {
+  display: none;
+}
+
+.cyberpunk-mode #sidebar .site-title {
+  background: linear-gradient(120deg, #00fff9, #ff00ea);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cyberpunk-mode #sidebar #avatar {
+  box-shadow:
+    0 0 0 2px rgb(0 255 255 / 55%),
+    0 0 18px 2px rgb(255 0 234 / 25%);
+  animation: cyberpunk-avatar-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes cyberpunk-avatar-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgb(0 255 255 / 55%),
+      0 0 18px 2px rgb(255 0 234 / 25%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 2px rgb(255 0 234 / 65%),
+      0 0 30px 8px rgb(57 255 20 / 35%);
+  }
+}
+
+.cyberpunk-mode #sidebar ul li.nav-item.active .nav-link {
+  box-shadow: inset 3px 0 0 0 #39ff14;
+}
+
+.cyberpunk-mode .post-preview:hover,
+.cyberpunk-mode .categories.card:hover {
+  box-shadow:
+    0 12px 32px rgb(0 0 0 / 45%),
+    0 0 0 1px rgb(0 255 255 / 30%),
+    0 0 24px rgb(255 0 234 / 15%);
+}
+
+.cyberpunk-mode #back-to-top:hover {
+  box-shadow: 0 0 16px rgb(57 255 20 / 45%);
+}
+
+.cyberpunk-mode ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgb(0 255 255 / 50%), rgb(255 0 234 / 50%));
+}
+
+.cyberpunk-mode ::selection {
+  background: rgb(57 255 20 / 35%);
+}
+
+.cyberpunk-mode .resume-terminal-line.prompt,
+.cyberpunk-mode .resume-section-title,
+.cyberpunk-mode .rt-cursor,
+.cyberpunk-mode .rt-heading,
+.cyberpunk-mode .ascii-clock-prompt {
+  color: #39ff14 !important;
+}
+
+.cyberpunk-mode .resume-terminal-window,
+.cyberpunk-mode #resume-card,
+.cyberpunk-mode .ascii-clock,
+.cyberpunk-mode .rt-project-card,
+.cyberpunk-mode .site-menu-close,
+.cyberpunk-mode .site-menu-trigger {
+  border-color: rgb(0 255 255 / 35%) !important;
+}
+
+.cyberpunk-mode #resume-card {
+  border-image: linear-gradient(120deg, #00fff9, #ff00ea) 1;
+}
+
+.cyberpunk-mode .ascii-clock-time,
+.cyberpunk-mode .site-menu-heading {
+  background: linear-gradient(120deg, #ff00ea, #39ff14) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.cyberpunk-mode .site-menu-sun {
+  background: radial-gradient(
+    circle at 38% 32%,
+    rgb(255 255 255 / 95%),
+    rgb(255 0 234 / 90%) 32%,
+    rgb(57 255 20 / 60%) 62%,
+    rgb(57 255 20 / 0%) 100%
+  ) !important;
+}
+
+.cyberpunk-mode .site-menu-planet {
+  border-color: rgb(0 255 255 / 60%) !important;
+  color: #39ff14 !important;
+}
+
+.cyberpunk-mode .site-menu-orbit-ring {
+  border-color: rgb(0 255 255 / 25%) !important;
+}

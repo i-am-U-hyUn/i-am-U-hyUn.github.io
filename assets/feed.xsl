@@ -429,6 +429,7 @@
                             over = true;
                             glitchFrames = GLITCH_DURATION;
                             initMatrix();
+                            try { localStorage.setItem('cyberpunk-mode', '1'); } catch (e) {}
                           }
                         }
                       }
@@ -441,6 +442,11 @@
                         if (hitX < oHitX + CACTUS_HIT_W && hitX + DINO_HIT_W > oHitX &&
                             dino.y < oHitY + CACTUS_HIT_H && dino.y + dino.h > oHitY) {
                           over = true;
+                          try {
+                            if (localStorage.getItem('cyberpunk-mode') === '1') {
+                              localStorage.removeItem('cyberpunk-mode');
+                            }
+                          } catch (e) {}
                         }
                       }
 
