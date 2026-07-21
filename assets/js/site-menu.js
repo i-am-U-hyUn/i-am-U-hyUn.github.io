@@ -144,12 +144,28 @@
     var height = 0;
     var stars = [];
     var nebulae = [];
+    var trail = [];
     var rafId = null;
     var resizeTimer = null;
     var pointer = { x: -9999, y: -9999, active: false };
 
     var STAR_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
+    var TRAIL_COLORS = ['255, 255, 255', '94, 234, 212', '167, 139, 250'];
     var POINTER_RADIUS = 150;
+    var MAX_TRAIL = 50;
+
+    function spawnTrail(x, y) {
+      trail.push({
+        x: x,
+        y: y,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: 1 + Math.random() * 1.7,
+        life: 1,
+        color: TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)]
+      });
+      if (trail.length > MAX_TRAIL) trail.shift();
+    }
 
     function starCount() {
       var area = width * height;
@@ -229,6 +245,14 @@
         if (s.y < 0) { s.y = 0; s.vy *= -1; }
         if (s.y > height) { s.y = height; s.vy *= -1; }
       }
+
+      for (var t = trail.length - 1; t >= 0; t--) {
+        var p = trail[t];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.04;
+        if (p.life <= 0) trail.splice(t, 1);
+      }
     }
 
     function draw(time) {
@@ -284,6 +308,15 @@
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
       }
+
+      for (var ti = 0; ti < trail.length; ti++) {
+        var p = trail[ti];
+        var alpha = Math.max(0, p.life);
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(' + p.color + ', ' + alpha * 0.9 + ')';
+        ctx.arc(p.x, p.y, p.r * alpha, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     function frame(time) {
@@ -302,6 +335,8 @@
       pointer.x = e.clientX - rect.left;
       pointer.y = e.clientY - rect.top;
       pointer.active = true;
+
+      if (Math.random() < 0.6) spawnTrail(pointer.x, pointer.y);
     }
 
     function onPointerLeave() {
@@ -329,6 +364,7 @@
       overlay.removeEventListener('pointermove', onPointerMove);
       overlay.removeEventListener('pointerleave', onPointerLeave);
       pointer.active = false;
+      trail = [];
     }
 
     return { start: start, stop: stop };
