@@ -151,24 +151,26 @@
 
     function starCount() {
       var area = width * height;
-      var count = Math.round(area / 2600);
-      return Math.max(160, Math.min(count, 420));
+      var count = Math.round(area / 1800);
+      return Math.max(220, Math.min(count, 560));
     }
 
     function pickColor() {
       var roll = Math.random();
-      if (roll < 0.72) return STAR_COLORS[0];
-      return roll < 0.86 ? STAR_COLORS[1] : STAR_COLORS[2];
+      if (roll < 0.6) return STAR_COLORS[0];
+      return roll < 0.8 ? STAR_COLORS[1] : STAR_COLORS[2];
     }
 
-    function makeStar() {
+    function makeStar(i) {
+      var glow = i % 14 === 0; // a sparse subset of brighter "hero" stars
       return {
         x: Math.random() * width,
         y: Math.random() * height,
-        r: 0.4 + Math.random() * 1.4,
-        baseAlpha: 0.35 + Math.random() * 0.55,
+        r: glow ? 1.6 + Math.random() * 1.6 : 0.5 + Math.random() * 1.3,
+        baseAlpha: glow ? 0.85 + Math.random() * 0.15 : 0.55 + Math.random() * 0.4,
         speed: 0.4 + Math.random() * 1.1,
         phase: Math.random() * Math.PI * 2,
+        glow: glow,
         color: pickColor()
       };
     }
@@ -185,13 +187,14 @@
 
       stars = [];
       var target = starCount();
-      while (stars.length < target) stars.push(makeStar());
+      for (var i = 0; i < target; i++) stars.push(makeStar(i));
 
       var span = Math.max(width, height);
       nebulae = [
-        { x: width * 0.22, y: height * 0.28, r: span * 0.42, color: '167, 139, 250', base: 0.11 },
-        { x: width * 0.8, y: height * 0.72, r: span * 0.46, color: '94, 234, 212', base: 0.1 },
-        { x: width * 0.55, y: height * 0.12, r: span * 0.3, color: '94, 234, 212', base: 0.06 }
+        { x: width * 0.18, y: height * 0.25, r: span * 0.5, color: '167, 139, 250', base: 0.36 },
+        { x: width * 0.82, y: height * 0.7, r: span * 0.55, color: '94, 234, 212', base: 0.32 },
+        { x: width * 0.6, y: height * 0.85, r: span * 0.4, color: '167, 139, 250', base: 0.22 },
+        { x: width * 0.4, y: height * 0.1, r: span * 0.35, color: '94, 234, 212', base: 0.2 }
       ];
     }
 
@@ -202,8 +205,9 @@
         width / 2, height * 0.4, 0,
         width / 2, height * 0.4, Math.max(width, height) * 0.75
       );
-      bg.addColorStop(0, 'rgb(20, 18, 34)');
-      bg.addColorStop(1, 'rgb(4, 5, 9)');
+      bg.addColorStop(0, 'rgb(38, 32, 64)');
+      bg.addColorStop(0.55, 'rgb(16, 14, 30)');
+      bg.addColorStop(1, 'rgb(5, 5, 11)');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, width, height);
 
@@ -222,6 +226,17 @@
         var twinkle = reduceMotion
           ? s.baseAlpha
           : s.baseAlpha * (0.6 + 0.4 * Math.sin((time / 1000) * s.speed + s.phase));
+
+        if (s.glow) {
+          var halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 5);
+          halo.addColorStop(0, 'rgba(' + s.color + ', ' + twinkle * 0.5 + ')');
+          halo.addColorStop(1, 'rgba(' + s.color + ', 0)');
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r * 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
         ctx.beginPath();
         ctx.fillStyle = 'rgba(' + s.color + ', ' + twinkle + ')';
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
