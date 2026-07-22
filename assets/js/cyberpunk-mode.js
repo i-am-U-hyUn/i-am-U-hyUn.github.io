@@ -10,7 +10,8 @@
   var STORAGE_KEY = 'cyberpunk-mode';
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var CHARS = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ$#%&アイウエオカキクケコサシスセソ';
-  var FONT_SIZE = 15;
+  var FONT_SIZE = 13;
+  var TRAIL_LEN = 18;
 
   // Occasionally, one column spells out a real phrase instead of noise —
   // a small "there's a message in the rain" easter egg.
@@ -19,10 +20,33 @@
   var TYPE_INTERVAL = 6;
 
   // "Construct"-style perspective wireframe floor, behind the rain, to
-  // sell the virtual-world/skeleton-of-reality feel.
-  var GRID_ROWS = 14;
-  var GRID_DEPTH_SPEED = 0.0025;
+  // sell the virtual-world/skeleton-of-reality feel. Each page family
+  // gets its own horizon height, vanishing-point position and pace so
+  // it doesn't feel like one static, identical backdrop everywhere.
+  var GRID_CONFIGS = {
+    home: { horizon: 0.55, vanishX: 0.5, rows: 16, depthSpeed: 0.006, sway: 14 },
+    post: { horizon: 0.64, vanishX: 0.5, rows: 10, depthSpeed: 0.0045, sway: 6 },
+    category: { horizon: 0.5, vanishX: 0.32, rows: 14, depthSpeed: 0.008, sway: 20 },
+    archive: { horizon: 0.5, vanishX: 0.68, rows: 14, depthSpeed: 0.007, sway: 20 },
+    about: { horizon: 0.6, vanishX: 0.5, rows: 12, depthSpeed: 0.005, sway: 10 },
+    // The RSS win screen's backdrop was already approved as-is — kept
+    // pinned to the original untuned values so it doesn't drift when
+    // the other page configs get adjusted.
+    rss: { horizon: 0.58, vanishX: 0.5, rows: 14, depthSpeed: 0.0025, sway: 0 }
+  };
+  var PULSE_CHANCE = 0.006;
   var gridDepth = 0;
+  var gridConfig = GRID_CONFIGS.home;
+
+  function detectGridConfig() {
+    var p = window.location.pathname;
+    if (p.indexOf('/feed') === 0) return GRID_CONFIGS.rss;
+    if (p.indexOf('/categories') === 0 || p.indexOf('/tags') === 0) return GRID_CONFIGS.category;
+    if (p.indexOf('/archives') === 0) return GRID_CONFIGS.archive;
+    if (p.indexOf('/about') === 0) return GRID_CONFIGS.about;
+    if (p === '/' || p === '/index.html') return GRID_CONFIGS.home;
+    return GRID_CONFIGS.post;
+  }
 
   var canvas = null;
   var ctx = null;
@@ -50,10 +74,13 @@
     var count = Math.ceil(window.innerWidth / FONT_SIZE);
     cols = [];
     for (var i = 0; i < count; i++) {
+      var trail = [];
+      for (var t = 0; t < TRAIL_LEN; t++) trail.push(CHARS.charAt(Math.floor(Math.random() * CHARS.length)));
       cols.push({
         y: Math.random() * -window.innerHeight,
         speed: 0.12 + Math.random() * 0.28,
-        hold: 0
+        hold: 0,
+        trail: trail
       });
     }
     message = null;
@@ -71,6 +98,7 @@
     canvas.style.pointerEvents = 'none';
     document.body.insertBefore(canvas, document.body.firstChild);
     ctx = canvas.getContext('2d');
+    gridConfig = detectGridConfig();
     resize();
     window.addEventListener('resize', resize);
   }
@@ -88,8 +116,10 @@
   }
 
   function drawGrid(w, h) {
-    var horizonY = h * 0.58;
-    var vanishX = w / 2;
+    var cfg = gridConfig;
+    var horizonY = h * cfg.horizon;
+    var sway = Math.sin(Date.now() / 4000) * cfg.sway;
+    var vanishX = w * cfg.vanishX + sway;
 
     ctx.save();
     ctx.lineWidth = 1;
@@ -110,10 +140,15 @@
     }
     ctx.stroke();
 
-    for (var r = 0; r < GRID_ROWS; r++) {
-      var t = (r / GRID_ROWS + gridDepth) % 1;
+    for (var r = 0; r < cfg.rows; r++) {
+      var t = (r / cfg.rows + gridDepth) % 1;
       var y = horizonY + (h - horizonY) * (t * t);
-      ctx.strokeStyle = 'rgba(57, 255, 20, ' + (0.12 + t * 0.4) + ')';
+      var pulse = Math.random() < PULSE_CHANCE;
+
+      ctx.strokeStyle = pulse
+        ? 'rgba(190, 255, 255, ' + (0.55 + t * 0.4) + ')'
+        : 'rgba(57, 255, 20, ' + (0.12 + t * 0.4) + ')';
+      ctx.lineWidth = pulse ? 1.8 : 1;
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(w, y);
@@ -121,7 +156,7 @@
     }
 
     ctx.restore();
-    gridDepth = (gridDepth + GRID_DEPTH_SPEED) % 1;
+    gridDepth = (gridDepth + cfg.depthSpeed) % 1;
   }
 
   function draw() {
@@ -150,18 +185,27 @@
         }
       } else {
         if (col.hold <= 0) {
-          col.ch = CHARS.charAt(Math.floor(Math.random() * CHARS.length));
+          col.trail.unshift(CHARS.charAt(Math.floor(Math.random() * CHARS.length)));
+          col.trail.length = TRAIL_LEN;
           col.hold = 2 + Math.floor(Math.random() * 4);
         }
         col.hold--;
 
-        ctx.fillStyle = 'rgba(57, 255, 20, 0.85)';
-        ctx.fillText(col.ch, i * FONT_SIZE, col.y);
+        for (var t = 0; t < col.trail.length; t++) {
+          var ty = col.y - t * FONT_SIZE;
+          if (ty < -FONT_SIZE || ty > h + FONT_SIZE) continue;
+          if (t === 0) {
+            ctx.fillStyle = 'rgba(210, 255, 225, 0.95)';
+          } else {
+            ctx.fillStyle = 'rgba(57, 255, 20, ' + (0.85 * (1 - t / col.trail.length)).toFixed(3) + ')';
+          }
+          ctx.fillText(col.trail[t], i * FONT_SIZE, ty);
+        }
       }
 
       col.y += FONT_SIZE * col.speed;
-      if (col.y > h && Math.random() > 0.985) {
-        col.y = Math.random() * -200;
+      if (col.y - col.trail.length * FONT_SIZE > h) {
+        col.y = -Math.random() * FONT_SIZE * 5;
         if (isMessageCol) message = null;
       }
     }
