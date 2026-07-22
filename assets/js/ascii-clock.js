@@ -1,8 +1,9 @@
 /**
  * Small ASCII-style live clock + monthly calendar. Mounts below the
  * right-hand panel's "Trending Tags" section when that panel is laid
- * out (xl+ viewports), otherwise falls back to the sidebar so it's
- * still visible on narrower windows.
+ * out (xl+ viewports), otherwise falls back to the top of the sidebar
+ * nav menu (below the profile header) so it stays clear of the social
+ * icon row at the very bottom of the sidebar on narrower windows.
  */
 (function () {
   'use strict';
@@ -59,15 +60,15 @@
       return;
     }
 
-    var sidebarBottom = document.querySelector('#sidebar .sidebar-bottom');
-    if (sidebarBottom && sidebarBottom.parentNode) {
-      if (widget.parentNode !== sidebarBottom.parentNode || widget.nextSibling !== sidebarBottom) {
-        sidebarBottom.parentNode.insertBefore(widget, sidebarBottom);
+    var sidebar = document.getElementById('sidebar');
+    var sidebarNav = sidebar && sidebar.querySelector(':scope > nav');
+    if (sidebar && sidebarNav) {
+      if (widget.parentNode !== sidebar || widget.nextSibling !== sidebarNav) {
+        sidebar.insertBefore(widget, sidebarNav);
       }
       return;
     }
 
-    var sidebar = document.getElementById('sidebar');
     if (sidebar && widget.parentNode !== sidebar) sidebar.appendChild(widget);
   }
 

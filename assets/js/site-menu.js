@@ -1,8 +1,9 @@
 /**
  * Site cover: a solar-system map of the site's main sections (mirrors
- * the sidebar tabs). Shows automatically once on a visitor's first
- * landing on the home page, and can be reopened any time via the
- * floating trigger button.
+ * the sidebar tabs). Shows automatically once per browser session on
+ * landing on the home page (again next time the tab/window is closed
+ * and reopened), and can be reopened any time via the floating trigger
+ * button.
  */
 (function () {
   'use strict';
@@ -65,7 +66,7 @@
 
   function hasSeenCover() {
     try {
-      return window.localStorage.getItem(STORAGE_KEY) === '1';
+      return window.sessionStorage.getItem(STORAGE_KEY) === '1';
     } catch (e) {
       return true;
     }
@@ -73,7 +74,7 @@
 
   function markCoverSeen() {
     try {
-      window.localStorage.setItem(STORAGE_KEY, '1');
+      window.sessionStorage.setItem(STORAGE_KEY, '1');
     } catch (e) {}
   }
 
@@ -119,15 +120,17 @@
       '<button type="button" class="site-menu-close" aria-label="닫기">' +
         '<i class="fas fa-times" aria-hidden="true"></i>' +
       '</button>' +
-      '<div class="site-menu-header">' +
-        '<h2 class="site-menu-heading">Welcome To My Portfolio &amp; Blog</h2>' +
-        '<p class="site-menu-eyebrow">Hi, I\'m New Ya, but my name is Yuya.<br>I-am-U-hyUn, but my name is Yuhyeon.</p>' +
-      '</div>' +
-      '<div class="site-menu-solar" role="navigation" aria-label="사이트 지도">' +
-        '<div class="site-menu-sun" aria-hidden="true"></div>' +
-        planetsHtml +
-      '</div>' +
-      '<p class="site-menu-hint">숫자키 1–5 또는 ESC</p>';
+      '<div class="site-menu-content">' +
+        '<div class="site-menu-header">' +
+          '<h2 class="site-menu-heading">Welcome To My Portfolio &amp; Blog</h2>' +
+          '<p class="site-menu-eyebrow">Hi, I\'m New Ya, but my name is Yuya.<br>I-am-U-hyUn, but my name is Yuhyeon.</p>' +
+        '</div>' +
+        '<div class="site-menu-solar" role="navigation" aria-label="사이트 지도">' +
+          '<div class="site-menu-sun" aria-hidden="true"></div>' +
+          planetsHtml +
+        '</div>' +
+        '<p class="site-menu-hint">숫자키 1–5 또는 ESC</p>' +
+      '</div>';
 
     var profileWrapper = document.querySelector('#sidebar .profile-wrapper');
     if (profileWrapper) {

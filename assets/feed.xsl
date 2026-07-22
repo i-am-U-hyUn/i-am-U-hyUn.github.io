@@ -11,6 +11,7 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title><xsl:value-of select="atom:title"/> · RSS</title>
+        <script defer="defer" src="/assets/js/cyberpunk-mode.js"></script>
         <style>
           :root { color-scheme: dark; }
           body {
@@ -61,44 +62,45 @@
           .prompt { color: #5eead4; }
           .egg { opacity: 0.85; }
           .egg .star { color: #a78bfa; }
-          h1 {
-            font-size: 1.05rem;
-            margin: 0 0 0.35rem;
-          }
-          .subtitle { opacity: 0.7; font-size: 0.85rem; margin-bottom: 1.25rem; }
-          ul.entries { list-style: none; margin: 0; padding: 0; }
-          .entries li {
-            padding: 0.85rem 0;
-            border-bottom: 1px solid rgb(255 255 255 / 8%);
-          }
-          .entries li:last-child { border-bottom: none; }
-          .entry-date {
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-            font-size: 0.75rem;
-            color: #5eead4;
-            opacity: 0.85;
-          }
-          .entry-title a {
-            color: #e5edff;
-            text-decoration: none;
-            font-weight: 600;
-          }
-          .entry-title a:hover { color: #a78bfa; text-decoration: underline; }
-          .tag {
-            display: inline-block;
-            font-size: 0.72rem;
-            padding: 0.1rem 0.5rem;
-            margin: 0.3rem 0.3rem 0 0;
-            border-radius: 1rem;
-            background: rgb(167 139 250 / 12%);
-            border: 1px solid rgb(167 139 250 / 30%);
-            opacity: 0.85;
-          }
           .game-wrap { margin: 1.1rem 0 1.4rem; }
           .game-hint {
             font-size: 0.72rem;
             opacity: 0.55;
             margin-bottom: 0.4rem;
+          }
+          .home-cta { margin: 1rem 0 0.25rem; }
+          .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid rgb(94 234 212 / 30%);
+            background: rgb(94 234 212 / 8%);
+            color: #5eead4;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease;
+          }
+          .home-btn:hover {
+            background: rgb(94 234 212 / 16%);
+            border-color: rgb(94 234 212 / 60%);
+          }
+          .home-btn.win-glow {
+            color: #39ff14;
+            border-color: rgb(57 255 20 / 55%);
+            background: rgb(57 255 20 / 10%);
+            animation: home-btn-pulse 1.6s ease-in-out infinite;
+          }
+          .home-btn.win-glow:hover {
+            background: rgb(57 255 20 / 20%);
+            border-color: rgb(57 255 20 / 85%);
+          }
+          @keyframes home-btn-pulse {
+            0%, 100% { box-shadow: 0 0 0 rgb(57 255 20 / 0%); }
+            50% { box-shadow: 0 0 14px 2px rgb(57 255 20 / 45%); }
           }
           #dino-game {
             display: block;
@@ -351,6 +353,25 @@
                     var GLITCH_DURATION = 45;
                     var popups = [];
 
+                    function celebrateWin() {
+                      try { localStorage.setItem('cyberpunk-mode', '1'); } catch (e) {}
+                      if (window.CyberpunkMode && window.CyberpunkMode.enable) window.CyberpunkMode.enable();
+
+                      var btn = document.querySelector('.home-btn');
+                      if (btn) {
+                        btn.textContent = '🍋 레모네이드 완성 · $ exit matrix';
+                        btn.classList.add('win-glow');
+                      }
+                    }
+
+                    function resetHomeButton() {
+                      var btn = document.querySelector('.home-btn');
+                      if (btn) {
+                        btn.textContent = '접속 해제 · 매트릭스 밖으로';
+                        btn.classList.remove('win-glow');
+                      }
+                    }
+
                     function reset() {
                       dino.y = groundY - dino.h;
                       dino.vy = 0;
@@ -365,6 +386,7 @@
                       won = false;
                       glitchFrames = 0;
                       popups = [];
+                      resetHomeButton();
                     }
 
                     function updatePopups() {
@@ -429,7 +451,7 @@
                             over = true;
                             glitchFrames = GLITCH_DURATION;
                             initMatrix();
-                            try { localStorage.setItem('cyberpunk-mode', '1'); } catch (e) {}
+                            celebrateWin();
                           }
                         }
                       }
@@ -474,7 +496,7 @@
                       var count = Math.ceil(W / MATRIX_FONT_SIZE);
                       matrixCols = [];
                       for (var i = 0; i < count; i++) {
-                        matrixCols.push({ y: Math.random() * -H, speed: 2 + Math.random() * 3 });
+                        matrixCols.push({ y: Math.random() * -H, speed: 0.8 + Math.random() * 1.4 });
                       }
                     }
 
@@ -547,7 +569,7 @@
                           ctx.fillText('🍋 레모네이드 완성! 🥤', W / 2, H / 2 + 4);
                           ctx.font = '11px monospace';
                           ctx.fillStyle = 'rgba(57,255,20,0.7)';
-                          ctx.fillText('다시 탭 / Space로 재도전', W / 2, H / 2 + 24);
+                          ctx.fillText('로그아웃 완료 · 현실로 복귀', W / 2, H / 2 + 24);
                         }
                         ctx.textAlign = 'start';
                       }
@@ -616,23 +638,10 @@
               </div>
 
               <br/>
-              <h1><xsl:value-of select="atom:title"/></h1>
-              <div class="subtitle"><xsl:value-of select="atom:subtitle"/></div>
-
-              <div><span class="prompt">$</span> ls -la posts/</div>
-              <ul class="entries">
-                <xsl:for-each select="atom:entry">
-                  <li>
-                    <div class="entry-date"><xsl:value-of select="substring(atom:published, 1, 10)"/></div>
-                    <div class="entry-title">
-                      <a href="{atom:link/@href}"><xsl:value-of select="atom:title"/></a>
-                    </div>
-                    <xsl:for-each select="atom:category">
-                      <span class="tag"><xsl:value-of select="@term"/></span>
-                    </xsl:for-each>
-                  </li>
-                </xsl:for-each>
-              </ul>
+              <div><span class="prompt">$</span> exit</div>
+              <div class="home-cta">
+                <a class="home-btn" href="/">접속 해제 · 매트릭스 밖으로</a>
+              </div>
             </div>
           </div>
         </main>
