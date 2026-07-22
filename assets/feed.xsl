@@ -131,7 +131,7 @@
               </div>
 
               <div class="game-wrap">
-                <div class="game-hint">$ ./run_dino.sh <xsl:text> </xsl:text>— Space / 탭으로 점프, 기다리는 동안 한 판 하고 가세요</div>
+                <div class="game-hint">$ ./run_dino.sh <xsl:text> </xsl:text>— Space / 탭으로 점프 · 인생이 당신에게 레몬을 준다면? 🍋 22개를 모으면 무슨 일이 일어나는지 확인해보세요</div>
                 <canvas id="dino-game" width="600" height="150"></canvas>
                 <script><![CDATA[
                   (function () {
