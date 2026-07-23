@@ -228,8 +228,99 @@
     }
   }
 
+  // One-shot "reality glitching back in" effect for arriving home via the
+  // RSS game's EXIT link (?glitch=1) — a brief broken-neon flicker, not the
+  // persistent cyberpunk mode (that's only earned by winning the game).
+  var GLITCH_DURATION = 1500;
+  var GLITCH_BAR_COLORS = ['57, 255, 20', '0, 255, 255', '255, 0, 234'];
+  var GLITCH_CHARS = '01アイウエオカキクケコ$#%&';
+
+  function runExitGlitch() {
+    document.body.classList.add('exit-glitch');
+
+    var gCanvas = document.createElement('canvas');
+    gCanvas.id = 'exit-glitch-overlay';
+    gCanvas.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(gCanvas);
+
+    var gctx = gCanvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    gCanvas.width = w * dpr;
+    gCanvas.height = h * dpr;
+    gCanvas.style.width = w + 'px';
+    gCanvas.style.height = h + 'px';
+    gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var start = null;
+
+    function cleanup() {
+      gCanvas.remove();
+      document.body.classList.remove('exit-glitch');
+    }
+
+    if (reduceMotion) {
+      window.setTimeout(cleanup, 200);
+      return;
+    }
+
+    function frame(ts) {
+      if (start === null) start = ts;
+      var elapsed = ts - start;
+      var fade = Math.max(0, 1 - elapsed / GLITCH_DURATION);
+
+      gctx.clearRect(0, 0, w, h);
+
+      var bars = 4 + Math.floor(Math.random() * 6);
+      for (var i = 0; i < bars; i++) {
+        var y = Math.random() * h;
+        var bh = 2 + Math.random() * 14;
+        var dx = (Math.random() - 0.5) * 46 * fade;
+        var color = GLITCH_BAR_COLORS[Math.floor(Math.random() * GLITCH_BAR_COLORS.length)];
+        gctx.fillStyle = 'rgba(' + color + ', ' + (0.15 + Math.random() * 0.25) * fade + ')';
+        gctx.fillRect(dx, y, w, bh);
+      }
+
+      if (Math.random() < 0.5) {
+        gctx.font = '11px monospace';
+        gctx.fillStyle = 'rgba(57, 255, 20, ' + 0.55 * fade + ')';
+        for (var k = 0; k < 6; k++) {
+          gctx.fillText(
+            GLITCH_CHARS.charAt(Math.floor(Math.random() * GLITCH_CHARS.length)),
+            Math.random() * w,
+            Math.random() * h
+          );
+        }
+      }
+
+      if (elapsed < GLITCH_DURATION) {
+        window.requestAnimationFrame(frame);
+      } else {
+        cleanup();
+      }
+    }
+
+    window.requestAnimationFrame(frame);
+  }
+
+  function checkExitGlitch() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('glitch') !== '1') return;
+
+      params.delete('glitch');
+      var qs = params.toString();
+      var cleanUrl = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
+      window.history.replaceState(null, '', cleanUrl);
+
+      runExitGlitch();
+    } catch (e) {}
+  }
+
   function init() {
     if (isActive()) enable();
+    checkExitGlitch();
   }
 
   if (document.readyState === 'loading') {

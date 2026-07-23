@@ -68,7 +68,7 @@
             opacity: 0.55;
             margin-bottom: 0.4rem;
           }
-          .home-cta { margin: 1rem 0 0.25rem; }
+          .home-cta { margin: 1rem 0 0.25rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
           .home-btn {
             display: inline-flex;
             align-items: center;
@@ -82,25 +82,68 @@
             font-size: 0.82rem;
             font-weight: 600;
             text-decoration: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
             transition: background 0.2s ease, border-color 0.2s ease;
           }
           .home-btn:hover {
             background: rgb(94 234 212 / 16%);
             border-color: rgb(94 234 212 / 60%);
           }
-          .home-btn.win-glow {
+          .home-btn.pill-red {
+            color: #ff6b6b;
+            border-color: rgb(255 107 107 / 55%);
+            background: rgb(255 107 107 / 10%);
+            animation: home-btn-pulse-red 1.6s ease-in-out infinite;
+          }
+          .home-btn.pill-red:hover {
+            background: rgb(255 107 107 / 20%);
+            border-color: rgb(255 107 107 / 85%);
+          }
+          .home-btn.pill-blue {
+            color: #5b9dff;
+            border-color: rgb(91 157 255 / 55%);
+            background: rgb(91 157 255 / 10%);
+            animation: home-btn-pulse-blue 1.6s ease-in-out infinite;
+          }
+          .home-btn.pill-blue:hover {
+            background: rgb(91 157 255 / 20%);
+            border-color: rgb(91 157 255 / 85%);
+          }
+          @keyframes home-btn-pulse-red {
+            0%, 100% { box-shadow: 0 0 0 rgb(255 107 107 / 0%); }
+            50% { box-shadow: 0 0 14px 2px rgb(255 107 107 / 45%); }
+          }
+          @keyframes home-btn-pulse-blue {
+            0%, 100% { box-shadow: 0 0 0 rgb(91 157 255 / 0%); }
+            50% { box-shadow: 0 0 14px 2px rgb(91 157 255 / 45%); }
+          }
+          .truth-reveal {
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid rgb(57 255 20 / 35%);
+            background: #05070a;
             color: #39ff14;
-            border-color: rgb(57 255 20 / 55%);
-            background: rgb(57 255 20 / 10%);
-            animation: home-btn-pulse 1.6s ease-in-out infinite;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            text-shadow: 0 0 6px rgb(57 255 20 / 55%), 0 0 14px rgb(0 255 234 / 25%);
           }
-          .home-btn.win-glow:hover {
-            background: rgb(57 255 20 / 20%);
-            border-color: rgb(57 255 20 / 85%);
-          }
-          @keyframes home-btn-pulse {
-            0%, 100% { box-shadow: 0 0 0 rgb(57 255 20 / 0%); }
-            50% { box-shadow: 0 0 14px 2px rgb(57 255 20 / 45%); }
+          .space-reveal {
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid rgb(167 139 250 / 30%);
+            background:
+              radial-gradient(1px 1px at 10% 22%, #fff, transparent 60%),
+              radial-gradient(1px 1px at 28% 68%, #fff, transparent 60%),
+              radial-gradient(1.5px 1.5px at 52% 34%, #fff, transparent 60%),
+              radial-gradient(1px 1px at 74% 58%, #fff, transparent 60%),
+              radial-gradient(1.5px 1.5px at 88% 18%, #fff, transparent 60%),
+              radial-gradient(1px 1px at 44% 84%, #fff, transparent 60%),
+              linear-gradient(160deg, #1a1638, #0a0d1c);
+            color: #cdd6ff;
+            font-size: 0.85rem;
+            line-height: 1.7;
           }
           #dino-game {
             display: block;
@@ -126,8 +169,8 @@
               <div><span class="prompt">$</span> cat feed.xml</div>
               <div class="egg">
                 <span class="star">*</span> 오, 진짜로 RSS 파일을 열어보셨네요.
-                호기심 많은 분이시군요<span class="star">.</span> 여긴 사람 눈으로 보라고 만든 화면은 아니었는데,
-                이왕 오신 김에 예쁘게 보여드릴게요<span class="star">.</span>
+                호기심이 많은 분이시군요<span class="star">.</span> 제 블로그의 이스터에그를 찾으시다니<span class="star">.</span>
+                이왕 오신 김에 게임 한 판 하시고 가실래요? 제가 드리는 선물입니다<span class="star">.</span>
               </div>
 
               <div class="game-wrap">
@@ -353,22 +396,47 @@
                     var GLITCH_DURATION = 45;
                     var popups = [];
 
+                    function revealTruth(cta) {
+                      cta.innerHTML =
+                        '<div class="truth-reveal">' +
+                          '나에게 관심을 가져주셔서 감사합니다.<br/>' +
+                          '제 포트폴리오와 블로그는 사실 없습니다.<br/>' +
+                          '진짜 저를 알고 싶으시다면 절 인터뷰하세요.' +
+                        '</div>';
+                    }
+
+                    function revealSpace(cta) {
+                      cta.innerHTML =
+                        '<div class="space-reveal">' +
+                          '매트릭스에 남기로 하셨군요.<br/>' +
+                          '전 이 자리에 가장 fit한 사람입니다.<br/>' +
+                          '절 뽑아주세요.' +
+                        '</div>';
+                      window.setTimeout(function () { window.location.href = '/about/'; }, 2000);
+                    }
+
                     function celebrateWin() {
                       try { localStorage.setItem('cyberpunk-mode', '1'); } catch (e) {}
                       if (window.CyberpunkMode && window.CyberpunkMode.enable) window.CyberpunkMode.enable();
 
-                      var btn = document.querySelector('.home-btn');
-                      if (btn) {
-                        btn.textContent = '🍋 레모네이드 완성 · $ exit matrix';
-                        btn.classList.add('win-glow');
+                      var cta = document.querySelector('.home-cta');
+                      if (cta) {
+                        cta.innerHTML =
+                          '<button type="button" class="home-btn pill-red">🔴 빨간약 · 진실을 마주한다</button>' +
+                          '<button type="button" class="home-btn pill-blue">🔵 파란약 · 매트릭스에 남는다</button>';
+
+                        var redBtn = cta.querySelector('.pill-red');
+                        if (redBtn) redBtn.addEventListener('click', function () { revealTruth(cta); });
+
+                        var blueBtn = cta.querySelector('.pill-blue');
+                        if (blueBtn) blueBtn.addEventListener('click', function () { revealSpace(cta); });
                       }
                     }
 
                     function resetHomeButton() {
-                      var btn = document.querySelector('.home-btn');
-                      if (btn) {
-                        btn.textContent = '접속 해제 · 매트릭스 밖으로';
-                        btn.classList.remove('win-glow');
+                      var cta = document.querySelector('.home-cta');
+                      if (cta) {
+                        cta.innerHTML = '<a class="home-btn" href="/?glitch=1">EXIT</a>';
                       }
                     }
 
@@ -398,7 +466,10 @@
                     }
 
                     function jumpOrStart() {
-                      if (over) { reset(); started = true; return; }
+                      if (over) {
+                        if (won) return;
+                        reset(); started = true; return;
+                      }
                       if (!started) { started = true; return; }
                       if (dino.onGround) { dino.vy = JUMP_V; dino.onGround = false; }
                     }
@@ -640,7 +711,7 @@
               <br/>
               <div><span class="prompt">$</span> exit</div>
               <div class="home-cta">
-                <a class="home-btn" href="/">접속 해제 · 매트릭스 밖으로</a>
+                <a class="home-btn" href="/?glitch=1">EXIT</a>
               </div>
             </div>
           </div>

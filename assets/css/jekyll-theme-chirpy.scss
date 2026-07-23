@@ -120,452 +120,9 @@
   color: #fff;
 }
 
-/* ---------------------------------------------------------------- */
-/* Site menu: floating trigger + fullscreen overlay nav              */
-/* ---------------------------------------------------------------- */
-
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
-  }
-}
-
-.site-menu-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.75rem;
-  padding: 0.3rem 0.85rem;
-  font-size: 0.8rem;
-  border-radius: 2rem;
-  border: 1px solid rgb(94 234 212 / 35%);
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  transition:
-    background 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.site-menu-trigger:hover,
-.site-menu-trigger.is-open {
-  background: rgb(94 234 212 / 12%);
-  border-color: rgb(94 234 212 / 70%);
-}
-
-.site-menu-trigger i {
-  color: #5eead4;
-}
-
-.site-menu-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1001;
-  display: flex;
-  background: rgb(4 5 9 / 92%);
-  backdrop-filter: blur(10px);
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.35s ease,
-    visibility 0s linear 0.35s;
-}
-
-.site-menu-overlay.is-open {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.35s ease;
-}
-
-/* Scrolling lives on this inner wrapper, not on .site-menu-overlay itself,
-   so the scrollbar gutter never eats into the full-bleed galaxy canvas
-   and leaves a bare strip of the overlay background showing through. */
-.site-menu-content {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 2rem 1.5rem;
-  overflow-y: auto;
-}
-
-body.site-menu-locked {
-  overflow: hidden;
-}
-
-.site-menu-galaxy {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: block;
-}
-
-.site-menu-close {
-  position: absolute;
-  z-index: 2;
-  top: 1.25rem;
-  right: 1.25rem;
-  width: 2.6rem;
-  height: 2.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid rgb(94 234 212 / 30%);
-  background: transparent;
-  color: #5eead4;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition:
-    border-color 0.25s ease,
-    background 0.25s ease,
-    transform 0.25s ease;
-}
-
-.site-menu-close:hover,
-.site-menu-close:focus-visible {
-  border-color: rgb(94 234 212 / 65%);
-  background: rgb(94 234 212 / 10%);
-  transform: rotate(90deg);
-}
-
-.site-menu-header {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  max-width: 34rem;
-  margin: 0 auto 0.5rem;
-}
-
-.site-menu-heading {
-  margin: 0 0 0.6rem;
-  font-size: clamp(1.6rem, 4.2vw, 2.6rem);
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
-  background: linear-gradient(120deg, #5eead4, #a78bfa);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.site-menu-eyebrow {
-  margin: 0;
-  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
-  line-height: 1.6;
-  opacity: 0.75;
-}
-
-.site-menu-solar {
-  position: relative;
-  z-index: 1;
-  width: min(92vw, 78vh, 640px);
-  aspect-ratio: 1;
-  margin: 0.5rem auto;
-  flex-shrink: 0;
-}
-
-.site-menu-sun {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20%;
-  height: 20%;
-  min-width: 56px;
-  min-height: 56px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  filter: blur(7px);
-  background: radial-gradient(
-    circle at 38% 32%,
-    rgb(255 255 255 / 95%),
-    rgb(167 139 250 / 90%) 32%,
-    rgb(94 234 212 / 60%) 62%,
-    rgb(94 234 212 / 0%) 100%
-  );
-  box-shadow:
-    0 0 50px 18px rgb(94 234 212 / 30%),
-    0 0 110px 36px rgb(167 139 250 / 20%),
-    0 0 180px 60px rgb(94 234 212 / 10%);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .site-menu-sun {
-    animation: sun-glow 4s ease-in-out infinite;
-  }
-}
-
-@keyframes sun-glow {
-  0%,
-  100% {
-    box-shadow:
-      0 0 50px 18px rgb(94 234 212 / 30%),
-      0 0 110px 36px rgb(167 139 250 / 20%),
-      0 0 180px 60px rgb(94 234 212 / 10%);
-  }
-
-  50% {
-    box-shadow:
-      0 0 65px 22px rgb(167 139 250 / 40%),
-      0 0 130px 42px rgb(94 234 212 / 28%),
-      0 0 200px 66px rgb(167 139 250 / 14%);
-  }
-}
-
-.site-menu-orbit {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: calc(var(--orbit-radius) * 2);
-  height: calc(var(--orbit-radius) * 2);
-  margin-top: calc(var(--orbit-radius) * -1);
-  margin-left: calc(var(--orbit-radius) * -1);
-  pointer-events: none;
-}
-
-.site-menu-orbit-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1px dashed rgb(94 234 212 / 16%);
-}
-
-.site-menu-orbit-spin {
-  position: absolute;
-  inset: 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .site-menu-orbit-spin {
-    animation: orbit-spin var(--orbit-duration) linear infinite;
-  }
-}
-
-@keyframes orbit-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.site-menu-planet {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--planet-size);
-  height: var(--planet-size);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 38% 32%,
-    rgb(255 255 255 / 85%) 0%,
-    rgb(94 234 212 / 65%) 30%,
-    rgb(94 234 212 / 25%) 60%,
-    rgb(94 234 212 / 6%) 100%
-  );
-  box-shadow:
-    0 0 16px 2px rgb(94 234 212 / 45%),
-    0 0 34px 10px rgb(94 234 212 / 22%);
-  border: 1px solid rgb(94 234 212 / 55%);
-  color: #06120f;
-  text-shadow: 0 0 6px rgb(255 255 255 / 70%);
-  font-size: 1.1rem;
-  text-decoration: none;
-  pointer-events: auto;
-  transform: translate(-50%, -50%);
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.25s ease;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .site-menu-planet {
-    animation:
-      orbit-counter-spin var(--orbit-duration) linear infinite,
-      planet-glow-pulse 3.4s ease-in-out infinite;
-  }
-}
-
-@keyframes planet-glow-pulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 16px 2px rgb(94 234 212 / 45%),
-      0 0 34px 10px rgb(94 234 212 / 22%);
-  }
-
-  50% {
-    box-shadow:
-      0 0 22px 4px rgb(94 234 212 / 60%),
-      0 0 46px 14px rgb(94 234 212 / 30%);
-  }
-}
-
-.site-menu-planet[data-key='2'],
-.site-menu-planet[data-key='4'] {
-  background: radial-gradient(
-    circle at 38% 32%,
-    rgb(255 255 255 / 85%) 0%,
-    rgb(167 139 250 / 65%) 30%,
-    rgb(167 139 250 / 25%) 60%,
-    rgb(167 139 250 / 6%) 100%
-  );
-  box-shadow:
-    0 0 16px 2px rgb(167 139 250 / 45%),
-    0 0 34px 10px rgb(167 139 250 / 22%);
-  border-color: rgb(167 139 250 / 55%);
-  animation-name: orbit-counter-spin, planet-glow-pulse-purple;
-}
-
-@keyframes planet-glow-pulse-purple {
-  0%,
-  100% {
-    box-shadow:
-      0 0 16px 2px rgb(167 139 250 / 45%),
-      0 0 34px 10px rgb(167 139 250 / 22%);
-  }
-
-  50% {
-    box-shadow:
-      0 0 22px 4px rgb(167 139 250 / 60%),
-      0 0 46px 14px rgb(167 139 250 / 30%);
-  }
-}
-
-.site-menu-planet[data-key='2']::after {
-  content: '';
-  position: absolute;
-  inset: -30% -10%;
-  border: 1.5px solid rgb(167 139 250 / 35%);
-  border-radius: 50%;
-  transform: rotate(-18deg) scaleY(0.32);
-  pointer-events: none;
-}
-
-@keyframes orbit-counter-spin {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-
-  to {
-    transform: translate(-50%, -50%) rotate(-360deg);
-  }
-}
-
-.site-menu-planet:hover,
-.site-menu-planet:focus-visible {
-  border-color: #5eead4;
-  box-shadow:
-    0 0 24px 5px rgb(94 234 212 / 65%),
-    0 0 50px 16px rgb(94 234 212 / 35%);
-  transform: translate(-50%, -50%) scale(1.15);
-}
-
-.site-menu-planet[data-key='2']:hover,
-.site-menu-planet[data-key='2']:focus-visible,
-.site-menu-planet[data-key='4']:hover,
-.site-menu-planet[data-key='4']:focus-visible {
-  border-color: #a78bfa;
-  box-shadow:
-    0 0 24px 5px rgb(167 139 250 / 65%),
-    0 0 50px 16px rgb(167 139 250 / 35%);
-}
-
-@supports selector(:has(a)) {
-  @media (prefers-reduced-motion: no-preference) {
-    .site-menu-orbit:has(.site-menu-planet:hover) .site-menu-orbit-spin,
-    .site-menu-orbit:has(.site-menu-planet:focus-visible) .site-menu-orbit-spin,
-    .site-menu-orbit:has(.site-menu-planet:hover) .site-menu-planet,
-    .site-menu-orbit:has(.site-menu-planet:focus-visible) .site-menu-planet {
-      animation-play-state: paused;
-    }
-  }
-}
-
-.site-menu-planet-label {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-
-.site-menu-planet:hover .site-menu-planet-label,
-.site-menu-planet:focus-visible .site-menu-planet-label {
-  opacity: 1;
-}
-
-.site-menu-planet-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.site-menu-planet-desc {
-  font-size: 0.72rem;
-  opacity: 0.6;
-}
-
-.site-menu-hint {
-  position: relative;
-  z-index: 1;
-  margin: 0.75rem 0 0;
-  font-size: 0.78rem;
-  opacity: 0.4;
-  text-align: center;
-  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-menu-trigger,
-  .site-menu-overlay,
-  .site-menu-close,
-  .site-menu-planet {
-    transition: none !important;
-  }
-
-  /* Fixed, evenly spaced layout (angle set per-planet in the markup) so labels don't overlap without the spin */
-  .site-menu-orbit-spin {
-    transform: rotate(var(--orbit-angle, 0deg));
-  }
-
-  .site-menu-planet {
-    transform: translate(-50%, -50%) rotate(calc(var(--orbit-angle, 0deg) * -1));
-  }
-
-  .site-menu-planet:hover,
-  .site-menu-planet:focus-visible {
-    transform: translate(-50%, -50%) rotate(calc(var(--orbit-angle, 0deg) * -1)) scale(1.15);
-  }
-}
-
-@media (max-width: 575.98px) {
-  .site-menu-close {
-    top: 1rem;
-    right: 1rem;
-  }
-
-  .site-menu-planet-desc {
-    display: none;
   }
 }
 
@@ -1164,9 +721,7 @@ body.site-menu-locked {
 .cyberpunk-mode .resume-terminal-window,
 .cyberpunk-mode #resume-card,
 .cyberpunk-mode .ascii-clock,
-.cyberpunk-mode .rt-project-card,
-.cyberpunk-mode .site-menu-close,
-.cyberpunk-mode .site-menu-trigger {
+.cyberpunk-mode .rt-project-card {
   border-color: rgb(0 255 255 / 35%) !important;
 }
 
@@ -1174,29 +729,74 @@ body.site-menu-locked {
   border-image: linear-gradient(120deg, #00fff9, #ff00ea) 1;
 }
 
-.cyberpunk-mode .ascii-clock-time,
-.cyberpunk-mode .site-menu-heading {
+.cyberpunk-mode .ascii-clock-time {
   background: linear-gradient(120deg, #ff00ea, #39ff14) !important;
   background-clip: text !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
-.cyberpunk-mode .site-menu-sun {
-  background: radial-gradient(
-    circle at 38% 32%,
-    rgb(255 255 255 / 95%),
-    rgb(255 0 234 / 90%) 32%,
-    rgb(57 255 20 / 60%) 62%,
-    rgb(57 255 20 / 0%) 100%
-  ) !important;
+/* ---------------------------------------------------------------- */
+/* Exit glitch: one-shot "reality glitching back in" flicker played  */
+/* on arrival from the RSS game's EXIT link (?glitch=1)              */
+/* ---------------------------------------------------------------- */
+
+#exit-glitch-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
 }
 
-.cyberpunk-mode .site-menu-planet {
-  border-color: rgb(0 255 255 / 60%) !important;
-  color: #39ff14 !important;
+body.exit-glitch {
+  animation: exit-glitch-shake 1.5s steps(2, end) both;
 }
 
-.cyberpunk-mode .site-menu-orbit-ring {
-  border-color: rgb(0 255 255 / 25%) !important;
+@keyframes exit-glitch-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+
+  10% {
+    transform: translate(-2px, 1px);
+    filter: hue-rotate(20deg) saturate(2);
+  }
+
+  20% {
+    transform: translate(2px, -1px);
+    filter: hue-rotate(-15deg) saturate(1.8);
+  }
+
+  32% {
+    transform: translate(-1px, 2px);
+    filter: hue-rotate(30deg) saturate(2.2);
+  }
+
+  44% {
+    transform: translate(1px, -2px);
+    filter: none;
+  }
+
+  58% {
+    transform: translate(-3px, 0);
+    filter: hue-rotate(-25deg) saturate(2);
+  }
+
+  72% {
+    transform: translate(2px, 1px);
+    filter: none;
+  }
+
+  86% {
+    transform: translate(-1px, -1px);
+    filter: hue-rotate(10deg) saturate(1.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.exit-glitch {
+    animation: none;
+  }
 }
