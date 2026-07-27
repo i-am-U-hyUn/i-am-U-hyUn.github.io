@@ -154,6 +154,9 @@ education:
     period: "Mar 2021 – Feb 2026"
 
 certifications:
+  - name: AWS Certified Solutions Architect - Associate
+    issuer: Amazon Web Services
+    date: "Issued Jul 2026 · Expires Jul 2029"
   - name: AWS Certified Cloud Practitioner
     issuer: Amazon Web Services
     date: "Issued Jun 2026 · Expires Jun 2029"

@@ -144,6 +144,9 @@ education:
     period: "2021.03 – 2026.02"
 
 certifications:
+  - name: AWS Certified Solutions Architect - Associate
+    issuer: Amazon Web Services
+    date: "2026.07 발행 · 2029.07 만료"
   - name: AWS Certified Cloud Practitioner
     issuer: Amazon Web Services
     date: "2026.06 발행 · 2029.06 만료"
