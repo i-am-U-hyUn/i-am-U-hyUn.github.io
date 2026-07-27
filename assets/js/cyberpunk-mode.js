@@ -460,18 +460,44 @@
     }
   }
 
-  // "인터뷰하기" easter egg: every character on the page crumbles and
-  // bounces off the floor (Google-Gravity-style), then the contact card
-  // appears once everything has settled.
+  // "인터뷰하기" easter egg: every character, image and icon on the page
+  // crumbles and bounces off the floor (Google-Gravity-style), then the
+  // contact card appears once everything has settled.
   var GRAVITY_G = 0.6;
   var GRAVITY_BOUNCE = 0.42;
   var GRAVITY_FRICTION = 0.85;
   var GRAVITY_MAX_FRAMES = 300;
+  var ATOM_SELECTOR = 'img, i[class*="fa-"], svg';
   var gravityRunning = false;
+
+  function toParticle(el, vrotSpread) {
+    var r = el.getBoundingClientRect();
+    el.style.position = 'relative';
+    el.style.zIndex = '9998';
+    el.style.pointerEvents = 'none';
+    el.style.willChange = 'transform';
+    return {
+      el: el,
+      origX: r.left,
+      origY: r.top,
+      x: r.left,
+      y: r.top,
+      w: r.width || 6,
+      h: r.height || 14,
+      vx: (Math.random() - 0.5) * 6,
+      vy: (Math.random() - 1) * 2,
+      rot: 0,
+      vrot: (Math.random() - 0.5) * vrotSpread
+    };
+  }
 
   function runGravityCollapse(onDone) {
     if (gravityRunning) return;
     gravityRunning = true;
+
+    // The ascii-clock widget rewrites its own text every second, which
+    // would otherwise instantly undo the per-character split below.
+    if (window.AsciiClock && window.AsciiClock.stop) window.AsciiClock.stop();
 
     if (reduceMotion) {
       gravityRunning = false;
@@ -506,27 +532,17 @@
       textNode.parentNode.replaceChild(frag, textNode);
     });
 
+    // Images and icons fall as single pieces rather than being shredded
+    // into characters — icon glyphs are CSS content on the element, not
+    // real text nodes, so the walker above never sees them.
+    var atomEls = Array.prototype.slice.call(document.body.querySelectorAll(ATOM_SELECTOR)).filter(function (el) {
+      var r = el.getBoundingClientRect();
+      return r.width > 0 && r.height > 0;
+    });
+
     window.requestAnimationFrame(function () {
-      var particles = spans.map(function (span) {
-        var r = span.getBoundingClientRect();
-        span.style.position = 'relative';
-        span.style.zIndex = '9998';
-        span.style.pointerEvents = 'none';
-        span.style.willChange = 'transform';
-        return {
-          el: span,
-          origX: r.left,
-          origY: r.top,
-          x: r.left,
-          y: r.top,
-          w: r.width || 6,
-          h: r.height || 14,
-          vx: (Math.random() - 0.5) * 6,
-          vy: (Math.random() - 1) * 2,
-          rot: 0,
-          vrot: (Math.random() - 0.5) * 14
-        };
-      });
+      var particles = spans.map(function (span) { return toParticle(span, 14); })
+        .concat(atomEls.map(function (el) { return toParticle(el, 10); }));
 
       var frame = 0;
 

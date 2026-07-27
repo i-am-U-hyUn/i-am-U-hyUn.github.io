@@ -108,10 +108,12 @@
     calEl.innerHTML = buildCalendarHtml(now);
   }
 
+  var intervalId = null;
+
   function init() {
     var widget = build();
     tick(widget);
-    window.setInterval(function () {
+    intervalId = window.setInterval(function () {
       tick(widget);
     }, 1000);
   }
@@ -121,4 +123,15 @@
   } else {
     init();
   }
+
+  // Exposed so other effects (e.g. the cyberpunk mode gravity easter egg)
+  // can stop the tick before it overwrites DOM they're animating.
+  window.AsciiClock = {
+    stop: function () {
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+  };
 })();
