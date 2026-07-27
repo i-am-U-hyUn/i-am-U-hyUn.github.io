@@ -396,40 +396,53 @@
                     var GLITCH_DURATION = 45;
                     var popups = [];
 
-                    function revealTruth(cta) {
-                      cta.innerHTML =
-                        '<div class="truth-reveal">' +
-                          '나에게 관심을 가져주셔서 감사합니다.<br/>' +
-                          '제 포트폴리오와 블로그는 사실 없습니다.<br/>' +
-                          '진짜 저를 알고 싶으시다면 절 인터뷰하세요.' +
-                        '</div>';
+                    function revealTruth() {
+                      // cyberpunk-mode flag is already set by celebrateWin(); keep it —
+                      // choosing truth means the effect persists on arrival.
+                      window.location.href = '/?pill=red&glitch=1';
                     }
 
-                    function revealSpace(cta) {
-                      cta.innerHTML =
-                        '<div class="space-reveal">' +
-                          '매트릭스에 남기로 하셨군요.<br/>' +
-                          '전 이 자리에 가장 fit한 사람입니다.<br/>' +
-                          '절 뽑아주세요.' +
-                        '</div>';
-                      window.setTimeout(function () { window.location.href = '/about/'; }, 2000);
+                    function revealSpace() {
+                      // Staying in the matrix means going back to normal — no
+                      // persistent cyberpunk mode on arrival at /about/.
+                      try { sessionStorage.removeItem('cyberpunk-mode'); } catch (e) {}
+                      window.location.href = '/about/?pill=blue&glitch=1';
                     }
 
                     function celebrateWin() {
-                      try { localStorage.setItem('cyberpunk-mode', '1'); } catch (e) {}
+                      try { sessionStorage.setItem('cyberpunk-mode', '1'); } catch (e) {}
                       if (window.CyberpunkMode && window.CyberpunkMode.enable) window.CyberpunkMode.enable();
 
                       var cta = document.querySelector('.home-cta');
                       if (cta) {
+                        var capsuleRed = '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+                          '<defs><clipPath id="capsule-red"><rect x="2" y="7.5" width="20" height="9" rx="4.5"/></clipPath></defs>' +
+                          '<g transform="rotate(-45 12 12)">' +
+                            '<g clip-path="url(#capsule-red)">' +
+                              '<rect x="2" y="7.5" width="10" height="9" fill="#ff9b9b"/>' +
+                              '<rect x="12" y="7.5" width="10" height="9" fill="#c92a2a"/>' +
+                            '</g>' +
+                            '<rect x="2" y="7.5" width="20" height="9" rx="4.5" fill="none" stroke="#7a1f1f" stroke-width="0.8"/>' +
+                          '</g></svg>';
+                        var capsuleBlue = '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+                          '<defs><clipPath id="capsule-blue"><rect x="2" y="7.5" width="20" height="9" rx="4.5"/></clipPath></defs>' +
+                          '<g transform="rotate(-45 12 12)">' +
+                            '<g clip-path="url(#capsule-blue)">' +
+                              '<rect x="2" y="7.5" width="10" height="9" fill="#8ec5ff"/>' +
+                              '<rect x="12" y="7.5" width="10" height="9" fill="#1864ab"/>' +
+                            '</g>' +
+                            '<rect x="2" y="7.5" width="20" height="9" rx="4.5" fill="none" stroke="#0b3866" stroke-width="0.8"/>' +
+                          '</g></svg>';
+
                         cta.innerHTML =
-                          '<button type="button" class="home-btn pill-red">🔴 빨간약 · 진실을 마주한다</button>' +
-                          '<button type="button" class="home-btn pill-blue">🔵 파란약 · 매트릭스에 남는다</button>';
+                          '<button type="button" class="home-btn pill-red">' + capsuleRed + ' 빨간약 · 진실을 마주한다</button>' +
+                          '<button type="button" class="home-btn pill-blue">' + capsuleBlue + ' 파란약 · 매트릭스에 남는다</button>';
 
                         var redBtn = cta.querySelector('.pill-red');
-                        if (redBtn) redBtn.addEventListener('click', function () { revealTruth(cta); });
+                        if (redBtn) redBtn.addEventListener('click', revealTruth);
 
                         var blueBtn = cta.querySelector('.pill-blue');
-                        if (blueBtn) blueBtn.addEventListener('click', function () { revealSpace(cta); });
+                        if (blueBtn) blueBtn.addEventListener('click', revealSpace);
                       }
                     }
 
@@ -536,8 +549,8 @@
                             dino.y < oHitY + CACTUS_HIT_H && dino.y + dino.h > oHitY) {
                           over = true;
                           try {
-                            if (localStorage.getItem('cyberpunk-mode') === '1') {
-                              localStorage.removeItem('cyberpunk-mode');
+                            if (sessionStorage.getItem('cyberpunk-mode') === '1') {
+                              sessionStorage.removeItem('cyberpunk-mode');
                             }
                           } catch (e) {}
                         }

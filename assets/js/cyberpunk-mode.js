@@ -1,8 +1,8 @@
 /**
  * Site-wide "cyberpunk mode": unlocked by winning the RSS feed's dino
  * game (22 lemons) and cleared by losing a later run while it's on
- * (see assets/feed.xsl), persisted via localStorage and applied on
- * every page load.
+ * (see assets/feed.xsl), persisted via sessionStorage (so it resets to
+ * normal once the tab/browser is closed) and applied on every page load.
  */
 (function () {
   'use strict';
@@ -56,10 +56,37 @@
 
   function isActive() {
     try {
-      return window.localStorage.getItem(STORAGE_KEY) === '1';
+      return window.sessionStorage.getItem(STORAGE_KEY) === '1';
     } catch (e) {
       return false;
     }
+  }
+
+  // The horizon is drawn as a skyline of "buildings" sized by real
+  // per-category post counts (see window.__blogSkyline, injected by
+  // _includes/metadata-hook.html) instead of a flat generic line — the
+  // RSS page has no such data, so it falls back to the plain line there.
+  var MAX_SKYLINE_BARS = 28;
+  var MAX_SKYLINE_BAR_HEIGHT = 110;
+  var skylineCounts = (function () {
+    var data = window.__blogSkyline && window.__blogSkyline.categories;
+    if (!data || !data.length) return null;
+    return data
+      .map(function (c) { return c.count; })
+      .sort(function (a, b) { return b - a; })
+      .slice(0, MAX_SKYLINE_BARS);
+  })();
+
+  // Bars are laid out across the real main-content column, not the
+  // full viewport, so the skyline sits where the blog's actual content
+  // sits rather than spanning edge-to-edge underneath the sidebar too.
+  var contentBounds = { left: 0, width: window.innerWidth };
+
+  function computeContentBounds() {
+    var el = document.getElementById('main-wrapper');
+    if (!el) return { left: 0, width: window.innerWidth };
+    var r = el.getBoundingClientRect();
+    return { left: Math.max(0, r.left), width: Math.min(window.innerWidth, r.width || window.innerWidth) };
   }
 
   function resize() {
@@ -70,6 +97,7 @@
     canvas.style.width = window.innerWidth + 'px';
     canvas.style.height = window.innerHeight + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    contentBounds = computeContentBounds();
 
     var count = Math.ceil(window.innerWidth / FONT_SIZE);
     cols = [];
@@ -115,6 +143,30 @@
     }
   }
 
+  function drawHorizon(horizonY, w) {
+    ctx.strokeStyle = 'rgba(57, 255, 20, 0.35)';
+    ctx.beginPath();
+    ctx.moveTo(0, horizonY);
+    ctx.lineTo(w, horizonY);
+    ctx.stroke();
+
+    if (!skylineCounts || !skylineCounts.length) return;
+
+    var maxCount = skylineCounts[0];
+    var gap = 4;
+    var barW = Math.max(5, (contentBounds.width - gap * (skylineCounts.length - 1)) / skylineCounts.length);
+
+    for (var i = 0; i < skylineCounts.length; i++) {
+      var barH = Math.max(4, (skylineCounts[i] / maxCount) * MAX_SKYLINE_BAR_HEIGHT);
+      var x = contentBounds.left + i * (barW + gap);
+      ctx.fillStyle = 'rgba(57, 255, 20, 0.16)';
+      ctx.fillRect(x, horizonY - barH, barW, barH);
+      ctx.strokeStyle = 'rgba(150, 255, 180, 0.45)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 0.5, horizonY - barH + 0.5, Math.max(0, barW - 1), Math.max(0, barH - 1));
+    }
+  }
+
   function drawGrid(w, h) {
     var cfg = gridConfig;
     var horizonY = h * cfg.horizon;
@@ -124,11 +176,7 @@
     ctx.save();
     ctx.lineWidth = 1;
 
-    ctx.strokeStyle = 'rgba(57, 255, 20, 0.35)';
-    ctx.beginPath();
-    ctx.moveTo(0, horizonY);
-    ctx.lineTo(w, horizonY);
-    ctx.stroke();
+    drawHorizon(horizonY, w);
 
     ctx.strokeStyle = 'rgba(57, 255, 20, 0.18)';
     var vCount = Math.ceil(w / 70);
@@ -228,9 +276,10 @@
     }
   }
 
-  // One-shot "reality glitching back in" effect for arriving home via the
-  // RSS game's EXIT link (?glitch=1) — a brief broken-neon flicker, not the
-  // persistent cyberpunk mode (that's only earned by winning the game).
+  // One-shot "reality glitching back in" effect for arriving via the RSS
+  // game's EXIT link or a red/blue pill pick (?glitch=1) — a brief
+  // broken-neon flicker, not the persistent cyberpunk mode (that's only
+  // earned by winning the game).
   var GLITCH_DURATION = 1500;
   var GLITCH_BAR_COLORS = ['57, 255, 20', '0, 255, 255', '255, 0, 234'];
   var GLITCH_CHARS = '01アイウエオカキクケコ$#%&';
@@ -318,9 +367,214 @@
     } catch (e) {}
   }
 
+  // Popup shown on arrival after picking a pill on the RSS game's win
+  // screen (see assets/feed.xsl) — red lands on '/', blue lands on
+  // '/about/', each carrying a ?pill= param this page reads once.
+  var PILL_MESSAGES = {
+    red:
+      '저에게 관심을 가져주셔서 감사합니다.<br/>' +
+      '진실을 택하신 그대여, 사실 제 블로그와 포트폴리오는 존재하지 않습니다.<br/>' +
+      '저에 대해서 아시고 싶으시다면, 현실 세계의 저를 만나세요.',
+    blue:
+      '매트릭스를 택하신 그대여, 저는 이런 사람입니다.<br/>' +
+      '제게 관심을 가져 주셔서 감사합니다.<br/>' +
+      '어제도, 오늘도, 내일도 항상 좋은 하루 보내세요.'
+  };
+
+  // Contact card revealed by the red pill's "인터뷰하기" button — both
+  // values are already public elsewhere on the site (site title / footer
+  // author name, _config.yml email), so surfacing them here adds nothing
+  // new to scrape.
+  var CONTACT_NAME = '0202_hyeon';
+  var CONTACT_EMAIL = 'iloveit8110@naver.com';
+
+  function mountPopup(innerHtml) {
+    var overlay = document.createElement('div');
+    overlay.id = 'pill-popup-overlay';
+    overlay.innerHTML = innerHtml;
+    document.body.appendChild(overlay);
+
+    function close() {
+      overlay.remove();
+      document.removeEventListener('keydown', onKey);
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') close();
+    }
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) close();
+    });
+    overlay.querySelector('.pill-popup-close').addEventListener('click', close);
+    document.addEventListener('keydown', onKey);
+
+    return { overlay: overlay, close: close };
+  }
+
+  function showContactReveal() {
+    mountPopup(
+      '<div class="pill-popup pill-popup-red" role="dialog" aria-modal="true">' +
+        '<button type="button" class="pill-popup-close" aria-label="닫기">&#215;</button>' +
+        '<p class="contact-reveal-name">' + CONTACT_NAME + '</p>' +
+        '<p class="contact-reveal-email"><a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a></p>' +
+      '</div>'
+    );
+  }
+
+  function showPillPopup(kind) {
+    var interviewBtn = kind === 'red'
+      ? '<button type="button" class="pill-popup-interview">인터뷰하기</button>'
+      : '';
+    var popup = mountPopup(
+      '<div class="pill-popup pill-popup-' + kind + '" role="dialog" aria-modal="true">' +
+        '<button type="button" class="pill-popup-close" aria-label="닫기">&#215;</button>' +
+        '<p>' + PILL_MESSAGES[kind] + '</p>' +
+        interviewBtn +
+      '</div>'
+    );
+
+    if (kind === 'red') {
+      popup.overlay.querySelector('.pill-popup-interview').addEventListener('click', function () {
+        popup.close();
+        runGravityCollapse(showContactReveal);
+      });
+    }
+  }
+
+  // "인터뷰하기" easter egg: every character on the page crumbles and
+  // bounces off the floor (Google-Gravity-style), then the contact card
+  // appears once everything has settled.
+  var GRAVITY_G = 0.6;
+  var GRAVITY_BOUNCE = 0.42;
+  var GRAVITY_FRICTION = 0.85;
+  var GRAVITY_MAX_FRAMES = 300;
+  var gravityRunning = false;
+
+  function runGravityCollapse(onDone) {
+    if (gravityRunning) return;
+    gravityRunning = true;
+
+    if (reduceMotion) {
+      gravityRunning = false;
+      onDone();
+      return;
+    }
+
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        var tag = node.parentNode && node.parentNode.nodeName;
+        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    var textNodes = [];
+    var n;
+    while ((n = walker.nextNode())) textNodes.push(n);
+
+    var spans = [];
+    textNodes.forEach(function (textNode) {
+      var frag = document.createDocumentFragment();
+      textNode.nodeValue.split('').forEach(function (ch) {
+        var span = document.createElement('span');
+        span.textContent = ch;
+        span.style.display = 'inline-block';
+        if (ch === ' ') span.style.width = '0.28em';
+        frag.appendChild(span);
+        spans.push(span);
+      });
+      textNode.parentNode.replaceChild(frag, textNode);
+    });
+
+    window.requestAnimationFrame(function () {
+      var particles = spans.map(function (span) {
+        var r = span.getBoundingClientRect();
+        span.style.position = 'relative';
+        span.style.zIndex = '9998';
+        span.style.pointerEvents = 'none';
+        span.style.willChange = 'transform';
+        return {
+          el: span,
+          origX: r.left,
+          origY: r.top,
+          x: r.left,
+          y: r.top,
+          w: r.width || 6,
+          h: r.height || 14,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 1) * 2,
+          rot: 0,
+          vrot: (Math.random() - 0.5) * 14
+        };
+      });
+
+      var frame = 0;
+
+      function step() {
+        var settled = true;
+        var floorY = window.innerHeight;
+
+        particles.forEach(function (p) {
+          p.vy += GRAVITY_G;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vrot;
+
+          if (p.y + p.h >= floorY) {
+            p.y = floorY - p.h;
+            p.vy *= -GRAVITY_BOUNCE;
+            p.vx *= GRAVITY_FRICTION;
+            p.vrot *= GRAVITY_FRICTION;
+            if (Math.abs(p.vy) < 1) p.vy = 0;
+          }
+          if (p.x < 0) {
+            p.x = 0;
+            p.vx *= -GRAVITY_BOUNCE;
+          }
+          if (p.x + p.w > window.innerWidth) {
+            p.x = window.innerWidth - p.w;
+            p.vx *= -GRAVITY_BOUNCE;
+          }
+
+          p.el.style.transform =
+            'translate(' + (p.x - p.origX) + 'px,' + (p.y - p.origY) + 'px) rotate(' + p.rot + 'deg)';
+
+          if (Math.abs(p.vy) > 0.4 || Math.abs(p.vx) > 0.4) settled = false;
+        });
+
+        frame++;
+        if (!settled && frame < GRAVITY_MAX_FRAMES) {
+          window.requestAnimationFrame(step);
+        } else {
+          gravityRunning = false;
+          onDone();
+        }
+      }
+
+      window.requestAnimationFrame(step);
+    });
+  }
+
+  function checkPillPopup() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var pill = params.get('pill');
+      if (pill !== 'red' && pill !== 'blue') return;
+
+      params.delete('pill');
+      var qs = params.toString();
+      var cleanUrl = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
+      window.history.replaceState(null, '', cleanUrl);
+
+      showPillPopup(pill);
+    } catch (e) {}
+  }
+
   function init() {
     if (isActive()) enable();
     checkExitGlitch();
+    checkPillPopup();
   }
 
   if (document.readyState === 'loading') {
