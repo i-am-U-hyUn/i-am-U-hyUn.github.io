@@ -885,22 +885,6 @@ body.exit-glitch {
   }
 }
 
-.contact-reveal-name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #ff9b9b;
-  margin-bottom: 0.35rem !important;
-}
-
-.contact-reveal-email a {
-  color: #5eead4;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
 @keyframes pill-popup-fade-in {
   from {
     opacity: 0;
