@@ -19,10 +19,10 @@
   var MESSAGE_CHANCE = 0.0012;
   var TYPE_INTERVAL = 6;
 
-  // "Construct"-style perspective wireframe floor, behind the rain, to
-  // sell the virtual-world/skeleton-of-reality feel. Each page family
-  // gets its own horizon height, vanishing-point position and pace so
-  // it doesn't feel like one static, identical backdrop everywhere.
+  // Radar-ping rings behind the rain, to sell the virtual-world/scanning
+  // feel. Each page family gets its own horizon height, ping-origin
+  // position and pace so it doesn't feel like one static, identical
+  // backdrop everywhere.
   var GRID_CONFIGS = {
     home: { horizon: 0.55, vanishX: 0.5, rows: 16, depthSpeed: 0.006, sway: 14 },
     post: { horizon: 0.64, vanishX: 0.5, rows: 10, depthSpeed: 0.0045, sway: 6 },
@@ -62,23 +62,36 @@
     }
   }
 
-  // The horizon is drawn as a skyline of "buildings" sized by real
+  // Above the horizon sits a night sky of neon stars sized by real
   // per-category post counts (see window.__blogSkyline, injected by
   // _includes/metadata-hook.html) instead of a flat generic line — the
   // RSS page has no such data, so it falls back to the plain line there.
-  var MAX_SKYLINE_BARS = 28;
-  var MAX_SKYLINE_BAR_HEIGHT = 110;
-  var skylineCounts = (function () {
+  var MAX_STARS = 28;
+  var MIN_STAR_RADIUS = 1.2;
+  var MAX_STAR_RADIUS = 4.2;
+  var STAR_FIELD_HEIGHT = 120;
+  var starCounts = (function () {
     var data = window.__blogSkyline && window.__blogSkyline.categories;
     if (!data || !data.length) return null;
     return data
       .map(function (c) { return c.count; })
       .sort(function (a, b) { return b - a; })
-      .slice(0, MAX_SKYLINE_BARS);
+      .slice(0, MAX_STARS);
   })();
 
-  // Bars are laid out across the real main-content column, not the
-  // full viewport, so the skyline sits where the blog's actual content
+  // Each star's position/twinkle is fixed at load time (not re-rolled
+  // every frame) so they hang still in the sky and only pulse in place.
+  var starOffsets = (starCounts || []).map(function () {
+    return {
+      xJitter: (Math.random() - 0.5) * 0.7,
+      yFrac: Math.random(),
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.4 + Math.random() * 0.8
+    };
+  });
+
+  // Stars are laid out across the real main-content column, not the
+  // full viewport, so the sky sits where the blog's actual content
   // sits rather than spanning edge-to-edge underneath the sidebar too.
   var contentBounds = { left: 0, width: window.innerWidth };
 
@@ -150,56 +163,62 @@
     ctx.lineTo(w, horizonY);
     ctx.stroke();
 
-    if (!skylineCounts || !skylineCounts.length) return;
+    if (!starCounts || !starCounts.length) return;
 
-    var maxCount = skylineCounts[0];
-    var gap = 4;
-    var barW = Math.max(5, (contentBounds.width - gap * (skylineCounts.length - 1)) / skylineCounts.length);
+    var maxCount = starCounts[0];
+    var n = starCounts.length;
+    var slotW = contentBounds.width / n;
+    var now = Date.now();
 
-    for (var i = 0; i < skylineCounts.length; i++) {
-      var barH = Math.max(4, (skylineCounts[i] / maxCount) * MAX_SKYLINE_BAR_HEIGHT);
-      var x = contentBounds.left + i * (barW + gap);
-      ctx.fillStyle = 'rgba(57, 255, 20, 0.16)';
-      ctx.fillRect(x, horizonY - barH, barW, barH);
-      ctx.strokeStyle = 'rgba(150, 255, 180, 0.45)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x + 0.5, horizonY - barH + 0.5, Math.max(0, barW - 1), Math.max(0, barH - 1));
+    for (var i = 0; i < n; i++) {
+      var off = starOffsets[i];
+      var radius = MIN_STAR_RADIUS + (starCounts[i] / maxCount) * (MAX_STAR_RADIUS - MIN_STAR_RADIUS);
+      var x = contentBounds.left + (i + 0.5) * slotW + off.xJitter * slotW;
+      var y = horizonY - 8 - off.yFrac * STAR_FIELD_HEIGHT;
+      var twinkle = 0.4 + 0.5 * (0.5 + 0.5 * Math.sin(now / 1000 * off.speed + off.phase));
+
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(180, 255, 210, ' + twinkle.toFixed(3) + ')';
+      ctx.fill();
+
+      if (radius > MIN_STAR_RADIUS + (MAX_STAR_RADIUS - MIN_STAR_RADIUS) * 0.5) {
+        ctx.beginPath();
+        ctx.arc(x, y, radius * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(57, 255, 20, ' + (twinkle * 0.12).toFixed(3) + ')';
+        ctx.fill();
+      }
     }
   }
 
+  // Radar-style ping: concentric rings expand from a point below the
+  // horizon and fade out as they grow, looping via gridDepth. Reuses each
+  // page's GRID_CONFIGS entry — rows = ring count, depthSpeed = expansion
+  // speed, sway/vanishX = the ping origin's drift and base position.
   function drawGrid(w, h) {
     var cfg = gridConfig;
     var horizonY = h * cfg.horizon;
     var sway = Math.sin(Date.now() / 4000) * cfg.sway;
-    var vanishX = w * cfg.vanishX + sway;
+    var originX = w * cfg.vanishX + sway;
+    var originY = horizonY + (h - horizonY) * 0.25;
+    var maxRadius = Math.max(w, h) * 0.75;
 
     ctx.save();
-    ctx.lineWidth = 1;
 
     drawHorizon(horizonY, w);
 
-    ctx.strokeStyle = 'rgba(57, 255, 20, 0.18)';
-    var vCount = Math.ceil(w / 70);
-    ctx.beginPath();
-    for (var i = 0; i <= vCount; i++) {
-      var bx = (i / vCount) * (w * 1.4) - w * 0.2;
-      ctx.moveTo(vanishX, horizonY);
-      ctx.lineTo(bx, h);
-    }
-    ctx.stroke();
-
     for (var r = 0; r < cfg.rows; r++) {
       var t = (r / cfg.rows + gridDepth) % 1;
-      var y = horizonY + (h - horizonY) * (t * t);
+      var radius = t * maxRadius;
       var pulse = Math.random() < PULSE_CHANCE;
+      var fade = Math.pow(1 - t, 1.4);
 
       ctx.strokeStyle = pulse
-        ? 'rgba(190, 255, 255, ' + (0.55 + t * 0.4) + ')'
-        : 'rgba(57, 255, 20, ' + (0.12 + t * 0.4) + ')';
+        ? 'rgba(190, 255, 255, ' + Math.min(1, fade * 0.6 + 0.35).toFixed(3) + ')'
+        : 'rgba(57, 255, 20, ' + (fade * 0.55).toFixed(3) + ')';
       ctx.lineWidth = pulse ? 1.8 : 1;
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
+      ctx.arc(originX, originY, radius, 0, Math.PI * 2);
       ctx.stroke();
     }
 
