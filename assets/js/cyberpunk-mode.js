@@ -1,13 +1,30 @@
 /**
  * Site-wide "cyberpunk mode": unlocked by winning the RSS feed's dino
  * game (22 lemons) and cleared by losing a later run while it's on
- * (see assets/feed.xsl), persisted via sessionStorage (so it resets to
- * normal once the tab/browser is closed) and applied on every page load.
+ * (see assets/feed.xsl), persisted via sessionStorage so it survives
+ * clicking around the site, but resets to normal on a plain refresh or
+ * once the tab/browser is closed.
  */
 (function () {
   'use strict';
 
   var STORAGE_KEY = 'cyberpunk-mode';
+  var RETURN_GLITCH_KEY = 'feed-return-glitch';
+
+  // A plain refresh should drop cyberpunk mode back to normal (only
+  // navigating elsewhere on the site keeps it on) — the Navigation Timing
+  // API is the only reliable way to tell "reload" apart from "clicked a
+  // link here", since both just look like a fresh page load otherwise.
+  function resetOnReload() {
+    try {
+      var nav = window.performance && window.performance.getEntriesByType
+        ? window.performance.getEntriesByType('navigation')[0]
+        : null;
+      if (nav && nav.type === 'reload') {
+        window.sessionStorage.removeItem(STORAGE_KEY);
+      }
+    } catch (e) {}
+  }
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var CHARS = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ$#%&アイウエオカキクケコサシスセソ';
   var FONT_SIZE = 13;
@@ -375,7 +392,7 @@
   function checkExitGlitch() {
     try {
       var params = new URLSearchParams(window.location.search);
-      if (params.get('glitch') !== '1') return;
+      if (params.get('glitch') !== '1') return false;
 
       params.delete('glitch');
       var qs = params.toString();
@@ -383,7 +400,32 @@
       window.history.replaceState(null, '', cleanUrl);
 
       runExitGlitch();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Leaving the RSS feed's dino game via its EXIT link/pill choice already
+  // carries its own ?glitch=1 (handled above). The browser Back button
+  // skips that link entirely, so assets/feed.xsl also drops a one-shot
+  // sessionStorage flag on pagehide — this picks that up on whichever page
+  // Back lands on, so the glitch still plays either way.
+  function checkReturnGlitch() {
+    try {
+      if (window.sessionStorage.getItem(RETURN_GLITCH_KEY) !== '1') return;
+      window.sessionStorage.removeItem(RETURN_GLITCH_KEY);
+      runExitGlitch();
     } catch (e) {}
+  }
+
+  function checkGlitchOnLoad() {
+    var fromQuery = checkExitGlitch();
+    if (fromQuery) {
+      try { window.sessionStorage.removeItem(RETURN_GLITCH_KEY); } catch (e) {}
+      return;
+    }
+    checkReturnGlitch();
   }
 
   // Popup shown on arrival after picking a pill on the RSS game's win
@@ -399,13 +441,6 @@
       '제게 관심을 가져 주셔서 감사합니다.<br/>' +
       '어제도, 오늘도, 내일도 항상 좋은 하루 보내세요.'
   };
-
-  // Contact card revealed by the red pill's "인터뷰하기" button — both
-  // values are already public elsewhere on the site (site title / footer
-  // author name, _config.yml email), so surfacing them here adds nothing
-  // new to scrape.
-  var CONTACT_NAME = '0202_hyeon';
-  var CONTACT_EMAIL = 'iloveit8110@naver.com';
 
   function mountPopup(innerHtml) {
     var overlay = document.createElement('div');
@@ -430,16 +465,6 @@
     return { overlay: overlay, close: close };
   }
 
-  function showContactReveal() {
-    mountPopup(
-      '<div class="pill-popup pill-popup-red" role="dialog" aria-modal="true">' +
-        '<button type="button" class="pill-popup-close" aria-label="닫기">&#215;</button>' +
-        '<p class="contact-reveal-name">' + CONTACT_NAME + '</p>' +
-        '<p class="contact-reveal-email"><a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a></p>' +
-      '</div>'
-    );
-  }
-
   function showPillPopup(kind) {
     var interviewBtn = kind === 'red'
       ? '<button type="button" class="pill-popup-interview">인터뷰하기</button>'
@@ -455,20 +480,43 @@
     if (kind === 'red') {
       popup.overlay.querySelector('.pill-popup-interview').addEventListener('click', function () {
         popup.close();
-        runGravityCollapse(showContactReveal);
+        runGravityCollapse(function () {});
       });
     }
   }
 
   // "인터뷰하기" easter egg: every character, image and icon on the page
-  // crumbles and bounces off the floor (Google-Gravity-style), then the
-  // contact card appears once everything has settled.
+  // crumbles and bounces off the floor (Google-Gravity-style).
   var GRAVITY_G = 0.6;
   var GRAVITY_BOUNCE = 0.42;
   var GRAVITY_FRICTION = 0.85;
   var GRAVITY_MAX_FRAMES = 300;
-  var ATOM_SELECTOR = 'img, i[class*="fa-"], svg';
+  // Inputs like the site search box only show their text as a `placeholder`
+  // attribute, never a real text node, so the walker below would otherwise
+  // leave them standing untouched while everything around them falls.
+  var ATOM_SELECTOR = 'img, i[class*="fa-"], svg, input[placeholder], textarea[placeholder]';
   var gravityRunning = false;
+
+  // Containers like the résumé terminal window are deliberately
+  // overflow:hidden for their normal rounded-corner look, which would
+  // otherwise clip their text particles the moment they fall past the
+  // box edge instead of dropping to the real floor like the rest of
+  // the page.
+  function unclipAncestors(el) {
+    var node = el;
+    while (node && node !== document.body) {
+      if (!node.__gravityUnclipped) {
+        var cs = window.getComputedStyle(node);
+        if (cs.overflow !== 'visible' || cs.overflowX !== 'visible' || cs.overflowY !== 'visible') {
+          node.style.overflow = 'visible';
+        }
+        if (cs.clipPath && cs.clipPath !== 'none') node.style.clipPath = 'none';
+        if (cs.clip && cs.clip !== 'auto') node.style.clip = 'auto';
+        node.__gravityUnclipped = true;
+      }
+      node = node.parentElement;
+    }
+  }
 
   function toParticle(el, vrotSpread) {
     var r = el.getBoundingClientRect();
@@ -505,11 +553,24 @@
       return;
     }
 
+    // The résumé terminal's blinking cursor is a leftover decoration from
+    // the typing effect (no text of its own), so it would otherwise hang
+    // frozen in mid-air after the real text around it has fallen away.
+    var cursors = document.body.querySelectorAll('.rt-cursor');
+    for (var ci = 0; ci < cursors.length; ci++) cursors[ci].remove();
+
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
       acceptNode: function (node) {
         if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
         var tag = node.parentNode && node.parentNode.nodeName;
         if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT') return NodeFilter.FILTER_REJECT;
+        // Screen-reader-only duplicates (e.g. the résumé's sr-only summary)
+        // are clipped to 1px via CSS on the very element holding the text,
+        // which unclipAncestors() can't undo without also making them
+        // suddenly visible — simplest to just leave them out of the fall.
+        if (node.parentNode && node.parentNode.closest && node.parentNode.closest('.visually-hidden')) {
+          return NodeFilter.FILTER_REJECT;
+        }
         return NodeFilter.FILTER_ACCEPT;
       }
     });
@@ -529,6 +590,7 @@
         frag.appendChild(span);
         spans.push(span);
       });
+      unclipAncestors(textNode.parentNode);
       textNode.parentNode.replaceChild(frag, textNode);
     });
 
@@ -539,6 +601,7 @@
       var r = el.getBoundingClientRect();
       return r.width > 0 && r.height > 0;
     });
+    atomEls.forEach(function (el) { unclipAncestors(el); });
 
     window.requestAnimationFrame(function () {
       var particles = spans.map(function (span) { return toParticle(span, 14); })
@@ -607,8 +670,9 @@
   }
 
   function init() {
+    resetOnReload();
     if (isActive()) enable();
-    checkExitGlitch();
+    checkGlitchOnLoad();
     checkPillPopup();
   }
 

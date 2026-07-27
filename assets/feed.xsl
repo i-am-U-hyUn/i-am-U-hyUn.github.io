@@ -717,6 +717,15 @@
                     reset();
                     draw();
                     requestAnimationFrame(loop);
+
+                    // The EXIT link/pill buttons carry their own ?glitch=1 for
+                    // the page they land on. The browser Back button leaves
+                    // this page without following either, so drop a one-shot
+                    // flag here too — cyberpunk-mode.js on the destination
+                    // page picks it up and plays the same glitch.
+                    window.addEventListener('pagehide', function () {
+                      try { sessionStorage.setItem('feed-return-glitch', '1'); } catch (e) {}
+                    });
                   })();
                 ]]></script>
               </div>
