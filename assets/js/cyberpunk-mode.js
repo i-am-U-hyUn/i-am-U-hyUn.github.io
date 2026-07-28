@@ -497,6 +497,20 @@
   var ATOM_SELECTOR = 'img, i[class*="fa-"], svg, input[placeholder], textarea[placeholder]';
   var gravityRunning = false;
 
+  // Content-heavy pages (home page post excerpts, archives) can produce
+  // thousands of per-character spans, and updating that many transforms
+  // every frame is what actually causes the jank — not the physics math.
+  // Skipping anything well outside the viewport keeps the count near what
+  // the visitor can actually see falling, with a hard cap as a backstop
+  // for pages where even the visible slice is still huge.
+  var VIEWPORT_BUFFER = 200;
+  var MAX_TEXT_PARTICLES = 700;
+
+  function isNearViewport(el) {
+    var r = el.getBoundingClientRect();
+    return r.bottom > -VIEWPORT_BUFFER && r.top < window.innerHeight + VIEWPORT_BUFFER;
+  }
+
   // Containers like the résumé terminal window are deliberately
   // overflow:hidden for their normal rounded-corner look, which would
   // otherwise clip their text particles the moment they fall past the
@@ -518,12 +532,12 @@
     }
   }
 
-  function toParticle(el, vrotSpread) {
+  function toParticle(el, vrotSpread, promote) {
     var r = el.getBoundingClientRect();
     el.style.position = 'relative';
     el.style.zIndex = '9998';
     el.style.pointerEvents = 'none';
-    el.style.willChange = 'transform';
+    if (promote) el.style.willChange = 'transform';
     return {
       el: el,
       origX: r.left,
@@ -571,6 +585,9 @@
         if (node.parentNode && node.parentNode.closest && node.parentNode.closest('.visually-hidden')) {
           return NodeFilter.FILTER_REJECT;
         }
+        // Text far outside the viewport would just snap onto the floor
+        // unseen — skip splitting it into particles at all.
+        if (node.parentNode && !isNearViewport(node.parentNode)) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
@@ -581,6 +598,10 @@
 
     var spans = [];
     textNodes.forEach(function (textNode) {
+      // Safety net for pages where even the visible slice is huge
+      // (e.g. a tall archive listing) — stop splitting once the particle
+      // count is already enough to sell the effect.
+      if (spans.length >= MAX_TEXT_PARTICLES) return;
       var frag = document.createDocumentFragment();
       textNode.nodeValue.split('').forEach(function (ch) {
         var span = document.createElement('span');
@@ -596,16 +617,18 @@
 
     // Images and icons fall as single pieces rather than being shredded
     // into characters — icon glyphs are CSS content on the element, not
-    // real text nodes, so the walker above never sees them.
+    // real text nodes, so the walker above never sees them. There are far
+    // fewer of these than character spans, so they're the only particles
+    // worth promoting to their own compositor layer.
     var atomEls = Array.prototype.slice.call(document.body.querySelectorAll(ATOM_SELECTOR)).filter(function (el) {
       var r = el.getBoundingClientRect();
-      return r.width > 0 && r.height > 0;
+      return r.width > 0 && r.height > 0 && isNearViewport(el);
     });
     atomEls.forEach(function (el) { unclipAncestors(el); });
 
     window.requestAnimationFrame(function () {
-      var particles = spans.map(function (span) { return toParticle(span, 14); })
-        .concat(atomEls.map(function (el) { return toParticle(el, 10); }));
+      var particles = spans.map(function (span) { return toParticle(span, 14, false); })
+        .concat(atomEls.map(function (el) { return toParticle(el, 10, true); }));
 
       var frame = 0;
 
