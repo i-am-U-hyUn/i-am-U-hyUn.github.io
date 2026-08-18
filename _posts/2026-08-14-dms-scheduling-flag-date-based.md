@@ -8,7 +8,7 @@ toc: true
 
 ## 들어가며
 
-[지난 글](/posts/dms-rejection-classification-llm/)에서 DMS 반려 사유를 Gemini로 분류하는 파이프라인을 만들고, 매일 신규 건만 처리하도록 `rejection_flag` 테이블에 마지막 처리 `SEQ`를 저장하는 방식으로 스케줄링을 붙였다. 실제로 며칠 돌려보니 이 SEQ 기반 flag가 발목을 잡는 상황이 생겨서, 오늘 스케줄링 기준을 날짜 기반으로 다시 짰다. 그 과정에서 Databricks Jobs API를 새로 붙이게 됐고, 여기서 인증 관련 문제를 두 개 더 만났다.
+[지난 글](/posts/dms-rejection-classification-llm/)에서 DMS 반려 사유를 Gemini로 분류하는 파이프라인을 만들고, 매일 신규 건만 처리하도록 `rejection_flag` 테이블에 마지막 처리 `SEQ`를 저장하는 방식으로 스케줄링을 붙였다. (사실 이 테이블을 만들기 전에는 마지막 처리 지점을 노트북의 Python 변수로만 들고 있었는데, 노트북 실행이 끝나면 변수도 같이 사라져서 매번 전체 데이터를 재처리하는 문제가 있었다. 그걸 테이블로 영속화하면서 한 번 해결했던 것.) 실제로 며칠 돌려보니 이번엔 이 SEQ 기반 flag가 다른 지점에서 발목을 잡는 상황이 생겨서, 오늘 스케줄링 기준을 날짜 기반으로 다시 짰다. 그 과정에서 Databricks Jobs API를 새로 붙이게 됐고, CLI 설치부터 PAT 발급까지 진행하면서 크고 작은 문제를 네 개 더 만났다.
 
 > 이 글에도 실제 계약 내용, 회사명, 워크스페이스 호스트 주소 등 사내 정보는 담지 않았다. 테이블명은 구조 설명을 위해 남겼고, 카탈로그·프로젝트 식별자는 제외했다.
 {: .prompt-warning }
@@ -76,11 +76,57 @@ Jobs API를 호출하려면 PAT(Personal Access Token)가 필요한데, 이걸 �
 - **시도 1 — 코드에 직접 입력**: 동작은 하지만 보안상 바로 탈락.
 - **시도 2 — 로컬에 Databricks CLI 설치해서 Secret Scope 생성**: CLI로 PAT 인증 후 Secret Scope를 만들고 토큰을 등록하는 방향으로 진행했다.
 
-```bash
-databricks configure --token
-# Host: <워크스페이스 호스트>
-# Token: dapi...
+PAT는 아래 설정으로 발급했다.
 
+| 항목 | 설정 |
+|---|---|
+| Name | `rejection-scheduler` (임의) |
+| Lifetime | 365일 |
+| Scope | `secrets` + `jobs` (Secret Scope 관리와 Jobs API 조회 둘 다 필요) |
+
+시도 2를 실제로 진행하면서 문제를 두 개 만났다.
+
+### 2-1. `databricks` 명령어를 찾을 수 없음
+
+```
+pip install databricks-cli
+...
+databricks configure --token
+databricks : 'databricks' 용어가 cmdlet, 함수, 스크립트 파일 또는
+실행할 수 있는 프로그램 이름으로 인식되지 않습니다.
+```
+
+`pip install` 로그 하단에 원인이 경고로 이미 찍혀 있었다.
+
+```
+WARNING: The scripts databricks.exe and dbfs.exe are installed in
+'...\Scripts' which is not on PATH.
+```
+
+패키지 자체는 정상 설치됐고, 실행 파일이 설치된 `Scripts` 폴더가 PowerShell의 `PATH`에 등록되어 있지 않아 명령어를 못 찾은 것뿐이었다. `PATH`에 해당 폴더를 추가하니 해결됐다.
+
+### 2-2. `secrets create-scope` 실행 시 `Error: b'Bad Request'`
+
+```
+databricks secrets create-scope --scope <scope명> --initial-manage-principal users
+...FutureWarning: 'ssl_version' option is deprecated...
+Error: b'Bad Request'
+```
+
+가장 단순한 `databricks workspace ls /`도 똑같이 실패해서, secrets 로직 자체의 문제가 아니라 연결·인증 단계의 공통 오류라는 것부터 확인했다. `Bad Request`가 Databricks REST API가 정상 응답할 때 나오는 JSON(`{"error_code": ..., "message": ...}`) 형식이 아니라 순수 텍스트였다는 점에서, 요청이 API 핸들러까지 도달하지 못했을 가능성에 무게를 두고 원인을 좁혀갔다.
+
+1. `.databrickscfg`의 host 값에 오타(`https://` 누락, 트레일링 슬래시 등)가 있는지 확인 → 이상 없음
+2. `databricks workspace ls /`로 재현해서 secrets 전용 문제가 아님을 확인
+3. 설치 로그에 같이 찍힌 `FutureWarning: 'ssl_version' option is deprecated`에 주목 — legacy `databricks-cli`(pip, 2019년대 패키지)가 오래된 방식으로 SSL 컨텍스트를 만드는데, 최신 `urllib3 2.7`과 조합되면서 TLS 핸드셰이크 단계에서 문제가 생기고, CLI가 원인을 제대로 파싱하지 못한 채 뭉뚱그려 `Bad Request`로 출력하는 것으로 추정
+4. `urllib3<2`로 다운그레이드하니 경고는 사라졌지만 일부 상황에서는 여전히 재현돼서, 단일 원인이 아니라 legacy CLI(0.18.0)와 최신 Python(3.14) 조합 자체의 근본적인 비호환 가능성도 함께 의심
+5. CLI가 실제 에러 메시지를 숨기고 있었으므로, CLI를 거치지 않고 `Invoke-RestMethod`로 REST API를 직접 호출해 진짜 응답을 확인
+
+> 이 이슈는 여러 원인 후보를 순차적으로 점검하며 해결됐고, 정확히 어느 조치가 결정적이었는지는 특정하지 못했다. 동일 증상이 재발하면 위 순서대로 다시 점검하기로 했다.
+{: .prompt-info }
+
+`urllib3` 다운그레이드와 host/token 설정값 재확인을 같이 적용한 뒤로는 CLI로 Secret Scope 생성이 정상 동작했다.
+
+```bash
 databricks secrets create-scope --scope <scope명> --initial-manage-principal users
 databricks secrets put --scope <scope명> --key <secret-key명> --string-value "dapi..."
 
@@ -88,7 +134,17 @@ databricks secrets list-scopes
 databricks secrets list --scope <scope명>
 ```
 
-처음 시도했을 때 401이 떴는데, 원인은 워크스페이스 정책이나 권한 문제가 아니라 호스트 주소·토큰 값을 입력하는 과정에서 내가 잘못 친 단순 타이핑 실수였다. 값을 다시 확인하고 재시도하니 Secret Scope 생성과 PAT 등록이 정상적으로 끝났다.
+**재발 방지 체크리스트**
+
+- CLI 에러가 `Bad Request`처럼 정보가 부족하게 나오면, CLI를 믿지 말고 `Invoke-RestMethod` 등으로 REST API를 직접 호출해 실제 JSON 에러(`error_code`, `message`)를 확인한다.
+- legacy `databricks-cli`(pip 버전)는 Databricks 공식 지원이 종료된 패키지이므로, 신규 환경에서는 처음부터 Go 기반 신규 Databricks CLI 사용을 권장한다.
+
+```powershell
+winget install Databricks.DatabricksCLI
+databricks auth login --host https://<workspace-url>
+```
+
+- PowerShell에 명령어를 붙여넣을 때는 이전 출력(프롬프트 문구, 이전 결과)까지 함께 복사하지 않도록 주의한다. 여러 줄이 섞여 붙여넣어지면 파싱 에러가 발생해 진단이 꼬인다.
 
 이후 노트북에서는 토큰을 코드에 노출하지 않고 아래 한 줄로 조회한다.
 
@@ -104,12 +160,42 @@ Secret Scope 생성은 됐는데, 이번엔 PAT를 처음 발급할 때 scope를
 
 ---
 
+## 4. Jobs API 호출 시 진짜 401 — 헤더 키 오타
+
+Secret Scope와 PAT 문제를 다 해결한 뒤에도, 정작 Jobs API를 호출하니 401이 났다.
+
+```
+Jobs API 조회 실패(401): {"error_code":401,"message":"Credential was not sent or was
+of an unsupported type for this API. ..."}
+```
+
+원인은 요청 헤더 딕셔너리의 키 이름 오타였다.
+
+```python
+headers={"Authroizations": f"Bearer{api_token}"},   # 오타: Authorization이 아님
+```
+
+`Authorization`이 아니라 `Authroizations`로 오타가 나 있어서 서버가 인증 정보를 아예 받지 못한 것으로 처리하고 401을 반환한 것이었다. 키 이름을 고치니 바로 해결됐다.
+
+```python
+headers={"Authorization": f"Bearer {api_token}"},
+```
+
+**재발 방지 체크리스트**
+
+- API 호출에서 401/403이 나면 토큰 유효성 문제로 단정하기 전에 헤더 키 이름 오타부터 확인한다.
+- 지금 코드는 `if resp.status_code == 200 ... else: ...` 구조라 인증 실패 시에도 예외 없이 `FALLBACK_DATE`로 조용히 넘어간다. "성공 이력 없음"과 "인증 실패"를 구분 못 하는 리스크가 있어서, 인증/권한 오류는 별도로 감지해 명시적으로 알리거나 예외를 발생시키는 방식으로 개선할 필요가 있다.
+
+---
+
 ## 정리
 
 | 문제 | 원인 | 해결 |
 |---|---|---|
 | SEQ flag로는 재상신 케이스 처리가 복잡함 | SEQ가 메시지 단위 PK라 계약 단위 증분과 맞지 않음 | Jobs API의 마지막 성공 실행일 기준으로 전환 |
-| CLI로 Secret Scope 생성 시 401 | 호스트/토큰 입력 실수 | 값 재확인 후 재시도로 해결 |
+| `databricks` 명령어 인식 안 됨 | pip 설치 경로가 PATH에 없음 | PATH에 Scripts 폴더 추가 |
+| CLI로 Secret Scope 생성 시 `Bad Request` | legacy CLI와 최신 urllib3의 SSL 비호환 추정 | urllib3 다운그레이드 + 설정값 재확인, 신규 Go CLI 전환 권장 |
 | PAT scope 부족으로 Secrets API 401 | 최초 발급 시 `jobs` scope만 지정 | `jobs` + `secrets` scope로 재발급 |
+| Jobs API 호출 시 401 | 요청 헤더 키 오타(`Authroizations`) | 헤더 키 이름 수정 |
 
-SEQ든 날짜든 "어디까지 처리했는지"를 기록하는 flag 자체는 필요했지만, 그 flag가 데이터의 어떤 단위(메시지 vs 계약)를 기준으로 삼는지에 따라 이후 로직의 복잡도가 크게 달라진다는 걸 이번에 체감했다. 401 에러를 두 번 만났는데, 둘 다 원인은 워크스페이스 설정이 아니라 입력 실수·권한(scope) 설정 누락처럼 내가 직접 고칠 수 있는 부분이었다.
+SEQ든 날짜든 "어디까지 처리했는지"를 기록하는 flag 자체는 필요했지만, 그 flag가 데이터의 어떤 단위(메시지 vs 계약)를 기준으로 삼는지에 따라 이후 로직의 복잡도가 크게 달라진다는 걸 이번에 체감했다. 이번에 만난 문제 중 라이브러리 궁합 문제였던 건 하나뿐이었고, 나머지는 PATH 미등록·헤더 오타·scope 설정 누락처럼 전부 내가 직접 고칠 수 있는 부분이었다.
