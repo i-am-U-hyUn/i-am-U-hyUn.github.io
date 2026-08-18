@@ -58,6 +58,83 @@ print(f"created_at >= {last_success_date} 삭제: {before - after}건 (남은 {a
 
 지운 뒤에는 `REG_DTTM >= last_success_date`인 신규 `CNTRCT_SEQ`만 다시 조인해서 클렌징·분류를 태운다.
 
+### 신규 대상 추출부터 재적재까지
+
+**1) 신규 활동이 있는 계약 후보 추출**
+
+```python
+df_new_messages = spark.sql(f"""
+    SELECT DISTINCT CNTRCT_SEQ
+    FROM cnt_chat_message
+    WHERE REG_DTTM >= DATE('{last_success_date}')
+""")
+df_new_messages.createOrReplaceTempView("new_cntrct_seqs")
+```
+
+`last_success_date` 이후에 채팅 메시지가 하나라도 새로 달린 `CNTRCT_SEQ`를 뽑아 "활동이 있었던 계약" 후보 목록을 만든다. 이 결과는 파이썬 변수(`df_new_messages`)가 아니라 `createOrReplaceTempView`로 임시 뷰(`new_cntrct_seqs`)로 등록해두는데, 바로 다음 셀에서 순수 SQL 문자열(`spark.sql("""...""")`) 안에서 이 결과를 참조해야 하기 때문이다. SQL 문자열 안에서는 파이썬 변수를 직접 쓸 수 없어서, 뷰로 등록해 테이블처럼 참조하는 방식을 썼다.
+
+**2) 반려 이력 확인 + 코멘트 수집**
+
+```python
+df_raw = spark.sql("""
+WITH rejected_history AS (
+    SELECT main.SEQ, history.state, main.PRGRS_STATE, main.REG_DTTM
+    FROM deal_history AS history
+    INNER JOIN cnt_main_cntrct AS main
+        ON history.DEAL_SEQ = main.DEAL_SEQ
+        AND history.TARGET_SEQ = main.SEQ
+    WHERE history.state IN ('CONTRACT_REJECTED', 'CONTRACT_QA_REJECTED')
+    AND main.SEQ IN (SELECT CNTRCT_SEQ FROM new_cntrct_seqs)
+),
+deal_comments AS(
+    SELECT main.SEQ, message.CHAT_TYPE, main.reg_dttm, main.prgrs_state,
+        COLLECT_LIST(message.CONTENT) AS comments
+    FROM rejected_history AS main
+    INNER JOIN cnt_chat_message AS message
+        ON main.SEQ = message.CNTRCT_SEQ
+    GROUP BY 1, 2, 3, 4
+)
+SELECT * FROM deal_comments""")
+
+raw_count = df_raw.count()
+print(f"신규/변경 반려 건: {raw_count}")
+
+if raw_count == 0:
+    print("반려 건 없음. 종료.")
+    dbutils.notebook.exit("NO_NEW_DATA")
+```
+
+1편에서 다룬 조인 구조(`deal_history` → `cnt_main_cntrct` → `cnt_chat_message`)를 그대로 쓰되, `rejected_history`를 뽑는 단계에서 `new_cntrct_seqs` 뷰로 대상을 오늘 활동이 있었던 계약으로만 좁힌다. 그렇게 걸러진 반려 계약에 대해 `cnt_chat_message`와 다시 조인해 코멘트 전체를 `COLLECT_LIST`로 모으면, `df_raw`에는 "이번에 새로 반려됐거나 코멘트가 추가된 계약의 전체 대화 내용"이 담긴다. 신규 건이 하나도 없으면 `dbutils.notebook.exit("NO_NEW_DATA")`로 바로 종료해 뒤의 클렌징·Gemini 호출·MERGE 단계를 아예 타지 않게 했다.
+
+**3) 클렌징 → Gemini 분류 → Spark DataFrame 변환**
+
+클렌징과 `classify_single`(1편의 `classify_single_rejection`과 동일한 로직)로 분류를 마친 뒤에는, 결과를 pandas DataFrame(`df_pd`)에 담는다. pandas는 파이썬 메모리 안에서만 도는 표라 Spark SQL에서 바로 쓸 수 없어서, 다시 한번 Spark DataFrame으로 변환하고 임시 뷰로 등록한다.
+
+```python
+df_new = spark.createDataFrame(df_pd)
+df_new.createOrReplaceTempView("new_classified")
+```
+
+이 변환·등록 없이는 뒤이어 나오는 `MERGE INTO ... USING new_classified`에서 분류 결과를 참조할 방법이 없다. `createOrReplaceTempView`는 `pyspark.sql.DataFrame`에만 정의된 메서드라 `df_pd`(pandas) 상태에서는 호출할 수 없고, 반드시 `spark.createDataFrame()`으로 감싼 뒤에만 쓸 수 있다.
+
+**4) MERGE(UPSERT)로 적재**
+
+```sql
+MERGE INTO {TABLE_CLASSIFIED} AS target
+USING new_classified AS source
+ON target.SEQ = source.SEQ AND target.CHAT_TYPE = source.CHAT_TYPE
+WHEN MATCHED THEN UPDATE SET
+    target.reg_dttm = source.reg_dttm,
+    target.prgrs_state = source.prgrs_state,
+    target.comments = source.comments,
+    target.`1차_대분류` = source.`1차_대분류`,
+    target.`2차_소분류` = source.`2차_소분류`,
+    target.updated_at = source.updated_at
+WHEN NOT MATCHED THEN INSERT *
+```
+
+`MERGE INTO`는 "있으면 업데이트, 없으면 새로 넣어라"를 한 번에 처리하는 UPSERT 문이다. `target`은 실제 테이블(`rejection_classified_live`), `source`는 방금 등록한 `new_classified` 뷰(이번에 새로 분류한 결과)다. `SEQ` + `CHAT_TYPE`이 같은 행을 매칭 기준으로 삼아, 매칭되는 행(기존에 있던 행)이면 나열된 컬럼만 덮어쓰고, 매칭 안 되는 행(새 `SEQ` + `CHAT_TYPE` 조합)이면 `source`의 모든 컬럼을 그대로 새 행으로 추가한다. `UPDATE SET` 목록에 `created_at`을 넣지 않은 것이 포인트인데, 기존 행의 최초 적재일을 그대로 보존하기 위해서다.
+
 날짜 관리는 두 컬럼으로 나눴다.
 
 | 컬럼 | 의미 |

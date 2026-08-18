@@ -51,7 +51,33 @@ cell 4의 `DELETE`가 `MERGE`보다 먼저 실행되기 때문에, 오늘 재처
 DELETE 옆 주석에는 "재실행 대비 멱등성 보장"이라는 의도가 적혀 있었다. 하지만 이 요구사항(재실행해도, 늦게 들어온 메시지가 있어도 정확한 최신 상태가 반영돼야 한다는 것)은 이미 다른 두 요소로 충분히 보장되고 있었다.
 
 - cell 5의 `WHERE REG_DTTM >= last_success_date` 조회가 날짜 단위로 매번 재스캔하기 때문에, 직전 실행 이후 늦게 들어온 메시지도 다시 잡아낸다.
+
+```python
+df_new_messages = spark.sql(f"""
+    SELECT DISTINCT CNTRCT_SEQ
+    FROM cnt_chat_message
+    WHERE REG_DTTM >= DATE('{last_success_date}')
+""")
+df_new_messages.createOrReplaceTempView("new_cntrct_seqs")
+```
+
 - cell 10의 `MERGE`가 `SEQ` + `CHAT_TYPE` 기준으로 기존 행은 UPDATE(이때 `created_at`은 갱신 대상에서 제외해 원래 값을 유지), 신규 행은 INSERT를 정확히 처리한다.
+
+```sql
+MERGE INTO {TABLE_CLASSIFIED} AS target
+USING new_classified AS source
+ON target.SEQ = source.SEQ AND target.CHAT_TYPE = source.CHAT_TYPE
+WHEN MATCHED THEN UPDATE SET
+    target.reg_dttm = source.reg_dttm,
+    target.prgrs_state = source.prgrs_state,
+    target.comments = source.comments,
+    target.`1차_대분류` = source.`1차_대분류`,
+    target.`2차_소분류` = source.`2차_소분류`,
+    target.updated_at = source.updated_at
+WHEN NOT MATCHED THEN INSERT *
+```
+
+`UPDATE SET` 목록에 `created_at`이 빠져 있는 게 핵심이다. 매칭된 기존 행의 `created_at`은 그대로 유지되고 `updated_at`만 갱신되니, `MERGE` 혼자서도 "재실행해도 원래 생성일이 바뀌지 않는" 멱등한 upsert가 이미 완성돼 있었다. (`new_classified`는 Gemini 분류 결과 pandas DataFrame을 `spark.createDataFrame()`으로 변환한 뒤 `createOrReplaceTempView`로 등록한 임시 뷰다. [지난 글](/posts/dms-scheduling-flag-date-based/)에서 다룬 것과 동일한 구조.)
 
 즉 `DELETE` 없이 `MERGE`만으로도 멱등성은 이미 보장되고 있었고, `DELETE`는 그 위에 얹혀서 오히려 부작용만 만드는 코드였다.
 
