@@ -1,5 +1,5 @@
 ---
-title: "DMS 반려사유 테이블이 매일 줄어들고 있었던 이유 — MERGE 앞의 DELETE 하나"
+title: "DMS 반려사유 분류 파이프라인 데이터 유실 원인과 복구 과정"
 date: 2026-08-18 00:00:00 +0900
 categories: [프로젝트, 데이터]
 tags: [DMS, Databricks, 데이터유실, MERGE, 멱등성, 트러블슈팅, 포트폴리오]
