@@ -14,6 +14,11 @@ title: Tech Blog
 - [Google Developers Blog](https://developers.googleblog.com/) — Google 개발자 커뮤니티 블로그
 - [Microsoft Azure Blog](https://azure.microsoft.com/en-us/blog/) — Azure 공식 블로그
 - [kt cloud Tech Blog](https://tech.ktcloud.com/) — kt cloud 기술 블로그
+- [Cloudflare Blog](https://blog.cloudflare.com/) — Cloudflare 공식 기술 블로그
+- [NHN Cloud Meetup](https://meetup.nhncloud.com/) — NHN Cloud 기술 블로그·커뮤니티
+- [Naver Cloud Platform (Medium)](https://medium.com/naver-cloud-platform) — 네이버클라우드 기술 블로그
+- [Alibaba Cloud Community Blog](https://www.alibabacloud.com/blog) — Alibaba Cloud 공식 블로그
+- [IBM Cloud Blog](https://www.ibm.com/cloud/blog) — IBM Cloud 공식 블로그
 
 ## 🇰🇷 국내 기업 기술 블로그
 

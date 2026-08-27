@@ -1,5 +1,5 @@
 ---
-title: "흩어진 운영 데이터를 하나로, kt cloud의 데이터 통합 플랫폼 'Deck' 구축기"
+title: "kt cloud, 흩어진 운영 데이터를 하나로 모은 데이터 통합 플랫폼 'Deck' 공개"
 date: 2026-08-27 09:00:00 +0900
 categories: [뉴스, 클라우드]
 tags: [DataLakehouse, DataPlatform, Kafka, Trino, Spark, StarRocks, Superset, ObjectStorage]
