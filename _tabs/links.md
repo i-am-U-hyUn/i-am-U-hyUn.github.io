@@ -20,3 +20,7 @@ order: 5
 - [카카오 테크](https://tech.kakao.com/) — 카카오 개발자 기술 블로그
 - [토스 테크](https://toss.tech/) — 토스 기술/제품/디자인 블로그
 - [우아한형제들 기술블로그](https://techblog.woowahan.com/) — 우아한형제들 기술 블로그
+- [쿠팡 엔지니어링](https://medium.com/coupang-engineering) — 쿠팡 기술 블로그 (Medium)
+- [LG CNS 블로그 - CNS Tech](https://www.lgcns.com/blog/cns-tech/) — LG CNS 기술 인사이트
+- [삼성SDS Research Blog](https://www.samsungsds.com/en/research-blog/index.html) — 삼성SDS 연구/기술 블로그
+- [SK DEVOCEAN](https://devocean.sk.com/tech) — SK 그룹 통합 기술 블로그·커뮤니티
