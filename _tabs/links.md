@@ -2,6 +2,7 @@
 # the default layout is 'page'
 icon: fas fa-link
 order: 5
+title: Tech Blog
 ---
 
 평소 즐겨보는 클라우드 벤더 및 국내 기업 기술 블로그 모음입니다.
