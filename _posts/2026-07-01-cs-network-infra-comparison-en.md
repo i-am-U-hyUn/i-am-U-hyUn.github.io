@@ -220,4 +220,21 @@ The difference is **whether the calling thread waits for the I/O operation to fi
 
 ---
 
+## 15. [Cloud/Networking] Interface Endpoint vs Gateway Endpoint
+
+AWS VPC endpoints let resources inside a VPC reach AWS services over a private network, without going through an internet gateway or NAT. The two types differ clearly in implementation, supported services, and cost.
+
+| Aspect | Interface Endpoint | Gateway Endpoint |
+| --- | --- | --- |
+| **Implementation** | Creates an **ENI (Elastic Network Interface)** in the subnet with a private IP | Adds an endpoint route to the route table |
+| **Supported services** | Most AWS services, custom services, third-party services (via PrivateLink) | **Amazon S3, Amazon DynamoDB only** (just 2 services) |
+| **Cost** | Hourly provisioning cost + data processing (per GB) cost | **Free** (no hourly or data transfer charge) |
+| **Security control** | Can use **Security Groups** and endpoint policies | Controlled via endpoint policies and route tables only (no Security Groups) |
+| **External access** | Reachable from on-premises (VPN, Direct Connect) and peered VPCs | Only reachable from subnets within the same VPC (no direct on-premises access) |
+
+- **Gateway Endpoint**: The first choice when EC2 instances inside a VPC need to reach S3 or DynamoDB directly. With no hourly or data-processing charge, it can significantly cut costs for large file uploads/downloads.
+- **Interface Endpoint**: Required for connecting to any AWS service other than S3/DynamoDB. Used when an on-premises server needs to securely reach AWS services (e.g., CloudWatch) over a private IP via Direct Connect or VPN.
+
+---
+
 These comparisons are the kind of knowledge that gives you a logical basis for **"why choose this technology"** when designing systems or troubleshooting as a CS engineer. More undergraduate CS concepts will keep getting added to this post over time.
