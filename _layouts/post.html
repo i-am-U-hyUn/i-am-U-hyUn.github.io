@@ -80,15 +80,14 @@ script_includes:
         </span>
 
         <div>
-          <!-- pageviews (replaces the "N min read" display) -->
-          {% if site.pageviews.provider and site.analytics[site.pageviews.provider].id %}
-            <span>
-              <em id="pageviews">
-                <i class="fas fa-spinner fa-spin small"></i>
-              </em>
-              {{ site.data.locales[lang].post.pageview_measure }}
-            </span>
-          {% endif %}
+          <!-- pageviews via busuanzi, no signup needed (replaces the "N min read" display) -->
+          <span id="busuanzi_container_page_pv">
+            <em id="busuanzi_value_page_pv">
+              <i class="fas fa-spinner fa-spin small"></i>
+            </em>
+            {{ site.data.locales[lang].post.pageview_measure }}
+          </span>
+          <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
         </div>
       </div>
     </div>
