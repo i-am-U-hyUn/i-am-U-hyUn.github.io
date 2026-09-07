@@ -134,17 +134,34 @@ function decideShape(opts: { indeg: number; outdeg: number; branchOut: number; i
 
 ---
 
-## 5. 3단계 드릴다운 뷰
+## 5. 드릴다운 뷰 + 전체 통합 맵
 
-같은 원본 데이터를 조회 시점에 세 가지 다른 그래프로 조립한다.
+같은 원본 데이터를 조회 시점에 네 가지 다른 그래프로 조립한다. 전부 `backend/src/flow.ts`에 있다.
 
 | 뷰 | API | 내용 |
 |---|---|---|
 | Broad | `/api/flow/macro` | 전체 macro 흐름 |
 | Detail | `/api/flow/detail/:macroId` | 특정 macro 하위의 상세 프로세스 그룹 흐름 |
 | Step | `/api/flow/steps/:processId` | 개별 프로세스의 단계 흐름 |
+| Full | `/api/flow/full` | 전체 프로세스를 하나의 스윔레인 통합 맵으로 |
 
 Detail 뷰는 그룹 내부 노드만 보여주지 않고, 그룹 경계를 넘나드는 엣지(다른 그룹으로 빠지는 분기, 다음 단계로 넘어가는 연결)까지 포함해서 그룹 밖 노드를 "외부 노드"로 함께 표시한다. 그래야 실제 프로세스 흐름이 잘려 보이지 않는다.
+
+Full 뷰(`buildFullGraph`)는 나머지 셋과 성격이 다르다. macro/detail/step은 그래프를 그대로 노드+엣지로 내려주지만, Full은 프로세스마다 `LANES`(부서/시스템별 4개 구획: 영업기회 / 사업성검토 / 계약검토 / 청구·마감)에 소속을 미리 배정하고, branch·rollback·hierarchy 엣지는 화면에 선으로 안 그릴 걸 감안해서 아예 **출발 노드에 붙는 뱃지 데이터**(`branches`, `crossNexts`)로 변환해 내려준다.
+
+```ts
+// backend/src/flow.ts — buildFullGraph
+// 레인을 넘어가는 순차(sequence) 연결은 선 대신 "다음 →" 뱃지로
+for (const e of edges) {
+  if (e.kind !== "sequence") continue;
+  const src = nodeById.get(e.from), tgt = nodeById.get(e.to);
+  if (!src || !tgt || src.lane === tgt.lane) continue; // 같은 레인은 나란히 배치라 생략
+  src.crossNexts ??= [];
+  src.crossNexts.push({ target: tgt.label, targetId: e.to, laneLabel: laneLabelOf(tgt.lane) });
+}
+```
+
+즉 "선을 그릴지 뱃지로 뭉갤지"는 프론트 렌더링 단계의 판단이 아니라, **API 응답을 만드는 시점에 백엔드가 이미 결정**해서 내려준다. 프론트는 그 결과를 그대로 그리기만 하면 된다 — 이 뷰를 화면에 실제로 그리면서 부딪힌 문제(왜 이런 변환이 필요했는지, 레이아웃은 어떻게 잡았는지)는 [2편](/posts/flowchart-swimlane-edge-routing/)에서 이어진다.
 
 ---
 
