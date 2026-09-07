@@ -106,7 +106,25 @@ if (e.id === "D5->C1:sequence") {
 - 편집 모드를 켜야만 선의 관절(waypoint)과 시작/끝 앵커가 드래그 가능해짐 (실수로 건드리는 걸 방지)
 - 드래그 제스처가 "시작"할 때만 이전 상태를 스택에 쌓아 `Ctrl+Z` 실행취소 지원 (마우스 이동마다 쌓으면 한 번의 undo로 거의 안 움직여서 무의미)
 - "저장" 버튼을 눌러야만 서버(`layout.json`)로 반영되고, 그 전까지는 로컬 상태
-- 저장할 때마다 덮어쓰기 전 상태를 이력(`layout.history.json`, 최근 20개)에 남겨서, 저장한 뒤에도 "이전 버전" 버튼으로 되돌릴 수 있게 함
+
+레이아웃 편집 결과는 기존 프로세스 문서 스키마(`processes`/`steps` 등)와 완전히 분리해서, 뷰 키(`full` / `detail:S5` / `steps:D3` 등) 단위로 별도 JSON 파일에만 저장한다. 원본 데이터와 사람이 미세조정한 화면 좌표를 같은 문서에 뒤섞지 않기 위해서다.
+
+"저장"을 누르면 그 전 상태를 잃지 않도록, 덮어쓰기 직전 값을 이력에 먼저 밀어 넣은 뒤에 새 값을 쓴다.
+
+```ts
+app.put("/api/layout", async (req, res) => {
+  const prev = await readLayout();
+  if (Object.keys(prev).length > 0) {
+    const hist = await readLayoutHistory();
+    hist.unshift({ savedAt: new Date().toISOString(), layout: prev });
+    await fs.writeFile(LAYOUT_HISTORY_FILE, JSON.stringify(hist.slice(0, 20), null, 2), "utf-8");
+  }
+  await fs.writeFile(LAYOUT_FILE, JSON.stringify(req.body, null, 2), "utf-8");
+  res.json({ ok: true });
+});
+```
+
+이력은 최근 20개까지만 배열 맨 앞에 쌓아두고 그 이상은 잘라낸다 — 무한정 쌓이는 걸 막으면서도, "몇 번 저장 전으로 되돌리고 싶다"는 실사용 요구는 20개면 충분히 커버된다고 판단했다. 덕분에 자동 배치 로직을 바꾸는 실험을 하다가 사람이 공들여 손본 배치를 실수로 덮어써도, "이전 버전" 버튼으로 저장 시점 단위까지는 되돌릴 수 있다.
 
 레이아웃 알고리즘이 커버 못 하는 나머지는 소프트웨어로 완전히 자동화하기보다, 사람이 마지막 미세조정을 할 수 있는 도구를 주는 쪽으로 실용적으로 타협한 것이다.
 

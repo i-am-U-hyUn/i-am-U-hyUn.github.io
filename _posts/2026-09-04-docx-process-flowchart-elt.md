@@ -2,7 +2,7 @@
 title: "정의서 업로드만으로 플로우차트가 그려지게 — 프로세스 시각화 도구의 ELT 아키텍처"
 date: 2026-09-04 09:00:00 +0900
 categories: [프로젝트, 백엔드]
-tags: [Node.js, Express, TypeScript, MongoDB, lowdb, mammoth, ELT, ReactFlow, 플로우차트, 포트폴리오]
+tags: [Node.js, Express, TypeScript, MongoDB, lowdb, mammoth, Multer, ELT, ReactFlow, 플로우차트, 포트폴리오]
 toc: true
 mermaid: true
 ---
@@ -57,7 +57,21 @@ try {
 }
 ```
 
-데모/시연 환경에서는 MongoDB Atlas 계정을 준비하지 못했거나 네트워크가 막혀 있을 수 있는데, 이 폴백 덕분에 인프라 준비 여부와 무관하게 항상 시연이 가능하다. 컬렉션 스키마는 Mongo와 lowdb 양쪽 모두 동일하게 유지했고(`processes`, `steps`, `pain_points`, `edges`, `hierarchy` 등 7개 컬렉션), Mongo로 전환하면 `process_id` 인덱스와 `$lookup`으로 DB 레벨 조인이 가능하도록 스키마를 미리 맞춰뒀다.
+데모/시연 환경에서는 MongoDB Atlas 계정을 준비하지 못했거나 네트워크가 막혀 있을 수 있는데, 이 폴백 덕분에 인프라 준비 여부와 무관하게 항상 시연이 가능하다. 컬렉션 스키마는 Mongo와 lowdb 양쪽 모두 동일하게 유지했고, Mongo로 전환하면 `process_id` 인덱스와 `$lookup`으로 DB 레벨 조인이 가능하도록 스키마를 미리 맞춰뒀다.
+
+7개 컬렉션은 전부 `process_id`를 연결 키로 두고 분리해서 저장한다(합쳐서 하나의 문서로 뭉치지 않는다).
+
+| 컬렉션 | 건수 | 연결 키 |
+|---|---|---|
+| processes | 20 | `process_id` (PK) |
+| steps | 76 | `process_id` → processes |
+| pain_points | 37 | `process_id` → processes |
+| edges | 22 | `from`/`to` → process_id |
+| hierarchy | 2 | `macro_process_id`, `detail_process_ids[]` |
+| priority_score_scale | 1 | (공통) |
+| data_quality_flags | 5 | `process_id` (nullable) |
+
+lowdb는 조인 기능이 없어서 앱 코드에서 `filter`로 수동 매칭하는데, 이렇게 컬렉션을 미리 분리해두면 나중에 Mongo로 전환했을 때 `$lookup` aggregation으로 그대로 갈아탈 수 있다 — 저장소를 바꾸자고 스키마까지 다시 설계할 필요가 없다.
 
 ---
 
@@ -88,6 +102,8 @@ if (/[À-ÿ]/.test(filename)) {
   if (/[가-힣]/.test(restored)) return restored;
 }
 ```
+
+**현재 자동 추출의 한계.** 지금은 파일명과 라벨 텍스트로 프로세스 기본 필드까지만 자동 매핑한다. 정의서 안의 표(단계별 담당자·소요시간·Pain Point 등)까지 파싱해서 `steps`/`pain_points`/`edges`를 자동으로 채우는 건 아직 손대지 않은 영역이다 — 표 구조가 문서마다 제각각이라 우선순위를 낮췄고, 지금은 시드 데이터로 채워둔 뒤 업로드는 신규 프로세스를 등록하는 용도로 쓰는 선에서 타협했다.
 
 ---
 
@@ -132,7 +148,25 @@ Detail 뷰는 그룹 내부 노드만 보여주지 않고, 그룹 경계를 넘�
 
 ---
 
-## 6. 비즈니스 임팩트
+## 6. 문서 관리 — 시드는 보호하고, 업로드는 자유롭게
+
+요구사항은 단순했다. 데모/베이스라인으로 쓰는 시드 데이터(20개 프로세스)는 실수로도 지워지면 안 되고, 반대로 사용자가 새로 업로드한 문서는 언제든 자유롭게 등록·삭제할 수 있어야 한다는 것. 그래서 `ProcessDoc`에 `uploaded` 플래그 하나를 두고, 삭제 요청을 서버에서부터 걸렀다.
+
+```ts
+app.delete("/api/process/:id", async (req, res) => {
+  const doc = await store.findOne<ProcessDoc>("processes", { process_id: req.params.id });
+  if (!doc.uploaded) {
+    return res.status(400).json({ error: "시드(기본) 프로세스는 삭제할 수 없습니다. 업로드 문서만 삭제 가능합니다." });
+  }
+  ...
+});
+```
+
+업로드 입구에도 방어를 걸었다 — `multer`를 메모리 스토리지로 붙이고 파일 크기 20MB 제한, `.docx` 확장자 검사를 파싱을 시도하기도 전에 먼저 처리한다. `/api/documents`는 시드/업로드를 구분해 업로드본은 최신순으로, 시드는 프로세스 ID순으로 정렬해 내려주고, 이 목록이 프론트의 "문서 관리" 서랍(UI)에서 필터링과 삭제 버튼의 근거가 된다. 서버가 최종 방어선이지만, 프론트에서도 `deletable` 플래그로 시드 문서는 삭제 버튼 자체를 비활성화해 — 서버 검증 하나만 믿지 않고 UI 단에서도 한 번 더 막는 이중 방어를 택했다.
+
+---
+
+## 7. 비즈니스 임팩트
 
 - **문서와 그림의 정합성 문제 해결**: 정의서가 바뀌어도 재업로드만 하면 그림이 자동으로 갱신된다. 더 이상 "문서는 고쳤는데 그림은 옛날 버전"인 상태가 생기지 않는다.
 - **드릴다운으로 청중에 맞는 해상도 제공**: 경영진 보고에는 Overview(전체 흐름), 실무 교육/인수인계에는 Step 단위까지 내려가는 상세 흐름을 같은 도구, 같은 데이터로 제공한다.
