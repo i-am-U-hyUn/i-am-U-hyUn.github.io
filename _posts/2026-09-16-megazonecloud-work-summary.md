@@ -57,7 +57,17 @@ MegazoneCloud Business Operations 조직에서 Process Innovation(PI)을 전담�
 
 ---
 
-## 5. 그 외 — Megathon 2026 사전교육
+## 5. MZC SpaceFlow (Megathon 2026 해커톤)
+
+**무엇을, 왜.** AWS 파트너 영업·기술 담당자가 PoA(Proof of Authority) 문서를 쓰는 데 평균 5일(Reject 포함 8일)이 걸리던 문제를, Megathon 2026 해커톤(Team 37)에서 팀으로 풀어봤다. 이메일·미팅록 같은 비정형 자료를 넣으면 자율 에이전트가 구조화·초안 작성·QA/QC·승인까지 이어주는 플랫폼을 만드는 게 목표였다. 나는 이 프로젝트에서 요건 정의·기획·UX(OPS) 트랙을 맡았다.
+
+**어떻게.** Amazon Bedrock AgentCore 기반 Parent Orchestrator가 요청을 Discovery/Architecture/Staffing/Cost/Reviewer/Formatter 6개 서브 에이전트로 라우팅하고, 각 결과를 patch(변경 단위) 하나로 통일해 DynamoDB에 낙관적 락으로 저장한 뒤 AppSync로 프론트에 실시간 반영한다. 승인 전 변경은 같은 patch를 Change Request로 쌓아 AS-IS/TO-BE diff로 검토·승인하게 했고, AWS 비용 조회 같은 외부 기능은 MCP 게이트웨이 도구로 분리했다.
+
+**상세 글**: [MZC SpaceFlow — Bedrock AgentCore 멀티 에이전트로 PoA 문서 자동화하기](/posts/spaceflow-agentcore-multiagent/)
+
+---
+
+## 6. 그 외 — Megathon 2026 사전교육
 
 직접 만든 프로젝트는 아니지만, Megathon 2026 사전교육에서 다룬 AI 에이전트 핵심 개념(Strands Agent SDK, Amazon Bedrock AgentCore)도 정리해뒀다. 위 프로젝트들에서 LLM을 "판단이 필요한 부분에만 좁혀서" 쓰는 설계 원칙을 반복해서 적용한 배경에는 이 교육에서 잡은 에이전트/도구 설계 감각이 깔려 있다.
 
@@ -67,4 +77,4 @@ MegazoneCloud Business Operations 조직에서 Process Innovation(PI)을 전담�
 
 ## 마치며
 
-다섯 가지를 나열해놓고 보니 공통된 패턴이 하나 보인다. **새 인프라를 만들기보다 이미 있는 것 위에 최소한으로 얹는 것**, 그리고 **정답이 명확한 부분은 코드가 확정 출력하고, 판단이 필요한 부분만 LLM에 맡기는 것**. PI 포털은 기존 스프레드시트 위에, MBR 자동화는 기존 PI 포털 위에, Architecture AI는 기존 정의서 위에 얹었다. 새로 짠 인프라는 Sales Cycle Lead Time 분석의 SQL/파이프라인과 Architecture AI의 배포 정도였는데, 공교롭게도 사고(데이터 유실)도 딱 그 두 곳에서 났다 — 아마 우연이 아닐 것이다.
+PI 포털은 기존 스프레드시트 위에, MBR 자동화는 기존 PI 포털 위에, Architecture AI는 기존 정의서 위에 얹은 것들이라 새 인프라랄 게 별로 없었다. 반대로 Sales Cycle Lead Time 분석의 SQL/파이프라인, Architecture AI의 배포, SpaceFlow는 처음부터 새로 짠 경우였고, 눈에 띄는 사고(데이터 유실)나 마이그레이션 잔재도 딱 그 세 곳에서 나왔다.
