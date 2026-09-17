@@ -1,5 +1,5 @@
 ---
-title: "WSL에서 GCP로 배포하기 — Makefile 구조와 '가짜 성공 로그'에 속지 않는 법"
+title: "WSL에서 GCP로 배포하기 — Makefile 구조와 배포 성공 여부 확인하는 법"
 date: 2026-09-16 18:00:00 +0900
 categories: [프로젝트, 인프라]
 tags: [WSL, GCP, "Cloud Run", "Cloud Build", Makefile, 배포, 포트폴리오]
