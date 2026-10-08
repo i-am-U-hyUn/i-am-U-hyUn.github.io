@@ -264,16 +264,7 @@ web = create_web_app() if HTTP_MODE else None   # gunicorn app:web
 
 ### 전체 구성
 
-```mermaid
-flowchart LR
-    U[Slack 사용자] -->|메시지·버튼·/action| S[Slack]
-    S -->|POST /slack/events<br/>서명 검증| CR[Cloud Run<br/>action-item-bot<br/>max 1대]
-    SCH[Cloud Scheduler<br/>매일 09:00 / 월 09:00] -->|POST /tasks/*<br/>OIDC ID 토큰| CR
-    CR -->|시작 시 다운로드<br/>쓰기마다 업로드| GCS[(Cloud Storage<br/>action_items.db<br/>버전 관리)]
-    SM[Secret Manager<br/>Slack 토큰·서명 키·Gemini 키] -->|실행 시 주입| CR
-    CR -->|회의록 분석| G[Gemini API]
-    CR -->|DM 발송| S
-```
+![Action Item Bot GCP 구성도](/assets/img/posts/action-item-bot/architecture.png)
 
 | 리소스 | 이름 | 역할 | 주요 설정 |
 |---|---|---|---|
