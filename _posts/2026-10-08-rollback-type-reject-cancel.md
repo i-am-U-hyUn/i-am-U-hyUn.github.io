@@ -85,7 +85,7 @@ export function rollbackTypeFromLabel(label?: string | null): RollbackType | nul
   if (/취소|재시작|재승인/.test(l)) return "cancel";
   if (/재검토/.test(l)) return "review";
   if (/복귀/.test(l)) return "return";
-  if (/반려|롤백|rolls*back/i.test(l)) return "reject";
+  if (/반려|롤백|roll\s*back/i.test(l)) return "reject";
   return null;
 }
 
